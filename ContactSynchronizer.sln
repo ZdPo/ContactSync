@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleContact", "GoogleContact\GoogleContact.csproj", "{58C0A27E-E20D-4810-B521-D73F2219259D}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "GCSetup", "CGSetup\CGSetup.vdproj", "{567E2597-F683-4A2C-BFC0-97C2E24D3381}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 7
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs33
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = CGSetup\\CGSetup.vdproj
+		SccProjectName1 = CGSetup
+		SccLocalPath1 = CGSetup
+		SccProjectUniqueName2 = core\\Core\u0020Client.csproj
+		SccProjectName2 = core
+		SccLocalPath2 = core
+		SccProjectUniqueName3 = DumpGoogleContact\\DumpGoogleContact.csproj
+		SccProjectName3 = DumpGoogleContact
+		SccLocalPath3 = DumpGoogleContact
+		SccProjectUniqueName4 = extensions\\Common\u0020Data\u0020Extensions.csproj
+		SccProjectName4 = extensions
+		SccLocalPath4 = extensions
+		SccProjectUniqueName5 = gcontacts\\Contacts.csproj
+		SccProjectName5 = gcontacts
+		SccLocalPath5 = gcontacts
+		SccProjectUniqueName6 = GoogleContact\\GoogleContact.csproj
+		SccProjectName6 = GoogleContact
+		SccLocalPath6 = GoogleContact
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		ASP|Any CPU = ASP|Any CPU
+		ASP|Mixed Platforms = ASP|Mixed Platforms
+		ASP|x86 = ASP|x86
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.ASP|Any CPU.ActiveCfg = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.ASP|Any CPU.Build.0 = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.ASP|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.ASP|Mixed Platforms.Build.0 = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.ASP|x86.ActiveCfg = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{58C0A27E-E20D-4810-B521-D73F2219259D}.Release|x86.ActiveCfg = Release|Any CPU
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.ASP|Any CPU.ActiveCfg = Release
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.ASP|Mixed Platforms.ActiveCfg = Release
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.ASP|x86.ActiveCfg = Release
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.Debug|Any CPU.ActiveCfg = Debug
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.Debug|x86.ActiveCfg = Debug
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.Release|Any CPU.ActiveCfg = Release
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.Release|Mixed Platforms.ActiveCfg = Release
+		{567E2597-F683-4A2C-BFC0-97C2E24D3381}.Release|x86.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
