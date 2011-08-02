@@ -12,18 +12,18 @@ namespace GoogleContact
     /// <summary>
     /// This class write logs file
     /// </summary>
-    class LoggerProvider
+    class LoggerProvider : IDisposable
     {
-        private static LoggerProvider _instance = null;
+        private static LoggerProvider _instance;
         private string _LogDirectory = "";
         private Constants.LogLevels _Level = Constants.LogLevels.Fatal;
-        private Logger _logger = null;
-        FileTarget fileTarget = null;
+        private Logger _logger;
+        FileTarget fileTarget;
 
         private LoggerProvider()
         {
             _LogDirectory = SettingsProvider.Instance.LogFile;
-            _Level = SettingsProvider.Instance.LogLevelGet();
+            _Level = SettingsProvider.LogLevelGet();
 
             LoggingConfiguration _LogConfiguration = new LoggingConfiguration();
             fileTarget = new FileTarget();
@@ -35,12 +35,30 @@ namespace GoogleContact
             LogManager.Configuration = _LogConfiguration;
             _logger = LogManager.GetCurrentClassLogger();
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if ((disposing) && (fileTarget!=null))
+            {
+                // dispose managed resources
+                fileTarget.Dispose();
+                fileTarget = null;
+            }
+            // free native resources
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Convert my level to NLOG
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        private LogLevel GetLevel(Constants.LogLevels level)
+        private static LogLevel GetLevel(Constants.LogLevels level)
         {
             LogLevel ret = LogLevel.Fatal;
             switch (level)
@@ -95,9 +113,9 @@ namespace GoogleContact
                 fileTarget.FileName = string.Format("{0}/${shortdate}.log", _LogDirectory);
                 fileTarget.Layout = "${time}|${level:uppercase=true}|${callsite:className=true:fileName=true:includeSourcePath=true:methodName=true}|${message}";
             }
-            if (!Enum.Equals(_Level, SettingsProvider.Instance.LogLevelGet()))
+            if (!Enum.Equals(_Level, SettingsProvider.LogLevelGet()))
             {
-                _Level = SettingsProvider.Instance.LogLevelGet();
+                _Level = SettingsProvider.LogLevelGet();
                 _LogConfiguration.LoggingRules.RemoveAt(0);
                 LoggingRule rule2 = new LoggingRule("*", GetLevel(_Level), fileTarget);
                 _LogConfiguration.LoggingRules.Add(rule2);

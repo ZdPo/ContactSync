@@ -22,7 +22,7 @@ namespace GoogleContact
         /// <summary>
         /// Is this class based onOutlook
         /// </summary>
-        internal bool _isFromOutlook = false;
+        internal bool _isFromOutlook;
         /// <summary>
         /// Id from source
         /// </summary>
@@ -46,7 +46,7 @@ namespace GoogleContact
         /// <summary>
         /// Reference to exist source for update
         /// </summary>
-        internal object _rawSource = null;
+        internal object _rawSource;
         #endregion
 
         #region Personal data
@@ -59,9 +59,9 @@ namespace GoogleContact
         DateTime Anniversary = DateTime.MinValue;
 #endif
         internal DateTime Birthday = DateTime.MinValue;
-#if (!NoImage)
         internal string ImagePath = null;
-#endif
+        internal string ImageHash = "";
+        internal string ImageETag = "";
         internal string Notes = "";
         internal string IM = "";
         #endregion
@@ -94,6 +94,7 @@ namespace GoogleContact
 
         #region Ostatni
         internal string WebServer = "";
+        internal List<string> Category=new List<string>();
         #endregion
 
         #region Child class
@@ -229,19 +230,6 @@ namespace GoogleContact
         }
         #endregion
 
-        #region Destructor & some props
-        /// <summary>
-        /// Need delete image !!
-        /// </summary>
-        ~OneContactBase()
-        {
-#if (!NoImage)
-            LoggerProvider.Instance.Logger.Debug("Clear the image [{0}]", ImagePath);
-            Utils.CleanupContactPictures(ImagePath);
-#endif
-        }
-        #endregion
-
         #region Count MD5 and other Internal function
         /// <summary>
         /// Recount self MD5
@@ -266,7 +254,6 @@ namespace GoogleContact
         internal string SummAllData()
         {
             StringBuilder sb = new StringBuilder("");
-            ///TODO: Need add more variables to MD5 source string in MD5Actual()
             sb.Append(Title);
             sb.Append(FirstName);
             sb.Append(MiddleName);
@@ -278,9 +265,9 @@ namespace GoogleContact
             sb.Append(Birthday.ToString("yyyyMMdd"));
             sb.Append(Notes);
             sb.Append(IM);
-#if (!NoImage)
-            ///TODO: Bude se řešit MD5 i pro obrazek? asi ne
-#endif
+            ///TODO: How control image change in MD5 hash
+            sb.Append(string.IsNullOrEmpty(ImagePath));
+            //sb.Append(ImageHash);
 
             foreach (Constants.PhoneType t in Enum.GetValues(typeof(Constants.PhoneType)))
             {
@@ -308,6 +295,10 @@ namespace GoogleContact
             sb.Append(Department);
             sb.Append(JobTitle);
             sb.Append(WebServer);
+            foreach (string cat in Category)
+            {
+                sb.Append(cat);
+            }
 
             return sb.ToString().Replace("\r", "").Replace("\n", "");
         }
@@ -322,10 +313,11 @@ namespace GoogleContact
         {
             string ret = "";
             string md5 = "";
-            if (source.StartsWith("[") && source.Contains("]-[") && source.EndsWith("]"))
+            if (source.StartsWith("[") && source.Contains("]-[") && source.EndsWith("]", StringComparison.InvariantCulture))
             {
-                ret = source.Substring(1, source.IndexOf("]-[") - 1);
-                md5 = source.Substring(source.IndexOf("]-[") + 3, source.Length - source.IndexOf("]-[") - 4);
+                ret = source.Substring(1, source.IndexOf("]-[",StringComparison.InvariantCulture) - 1);
+                md5 = source.Substring(source.IndexOf("]-[", StringComparison.InvariantCulture) + 3, source.Length - 
+                    source.IndexOf("]-[", StringComparison.InvariantCulture) - 4);
             }
             MD5fromReplica = md5;
             return ret;
@@ -335,7 +327,7 @@ namespace GoogleContact
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        internal string DataOrEmpty(string source)
+        internal static string DataOrEmpty(string source)
         {
             if (string.IsNullOrEmpty(source))
                 return string.Empty;
@@ -348,7 +340,7 @@ namespace GoogleContact
         {
             if (SettingsProvider.Instance.IsFirstTime)
             {
-                Constants.FirstSetupSynchronize fs = SettingsProvider.Instance.FirstSynchronizeGet();
+                Constants.FirstSetupSynchronize fs = SettingsProvider.FirstSynchronizeGet();
                 switch (fs)
                 {
                     case Constants.FirstSetupSynchronize.Outlook2Google:
@@ -454,9 +446,8 @@ namespace GoogleContact
             Anniversary = updater.Anniversary;
 #endif
             Birthday = updater.Birthday;
-#if (!NoImage)
             ImagePath = updater.ImagePath;
-#endif
+
             Notes = updater.Notes;
             IM = updater.IM;
             #endregion
@@ -488,7 +479,10 @@ namespace GoogleContact
             #endregion
 
             #region Ostatni
-            WebServer = updater.WebServer; ;
+            WebServer = updater.WebServer;
+            Category.Clear();
+            foreach (string cat in updater.Category)
+                Category.Add(cat);
             #endregion
 
             LoggerProvider.Instance.Logger.Debug("Update current RefID from/to: {0} - {1}", _referenceID, updater._MyID);
@@ -518,9 +512,8 @@ namespace GoogleContact
 #endif
             sb.AppendFormat("Organization (Company / Job Title / Department): {0} / {1} / {2}\r\n", Company, JobTitle, Department);
             sb.AppendFormat("IM / WebServer: {0} / {1}\r\n", IM, WebServer);
-#if (!NoImage)
             sb.AppendFormat("ImagePath: {0}\r\n", ImagePath);
-#endif
+
             sb.AppendFormat("Email1 / Email2 / Email3: {0} / {1} / {2}\r\n", email1, email2, email3);
             sb.AppendFormat("Telephone.Count: {0}\r\n", Telephone.Count);
             foreach (PhoneDetail p in Telephone.Values)

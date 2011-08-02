@@ -68,7 +68,7 @@ namespace GoogleContact.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Problem when logon to Google account..
+        ///   Looks up a localized string similar to Problem when log on to Google account..
         /// </summary>
         internal static string msgGoogleLogon {
             get {

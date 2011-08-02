@@ -30,7 +30,7 @@ namespace GoogleContact
             }
             gRemember.Checked = _sp.IsRemember;
             chFirstSync.Checked = _sp.IsFirstTime; ;
-            switch (_sp.FirstSynchronizeGet())
+            switch (SettingsProvider.FirstSynchronizeGet())
             {
                 case Constants.FirstSetupSynchronize.Outlook2Google:
                     rbOu2Go.Checked = true;
@@ -47,7 +47,7 @@ namespace GoogleContact
                 default:
                     break;
             }
-            switch (_sp.SynchronizeDirectionGet())
+            switch (SettingsProvider.SynchronizeDirectionGet())
             {
                 case Constants.SetupSynchronize.Outlook2Google:
                     rbOut2GoSync.Checked = true;
@@ -68,7 +68,7 @@ namespace GoogleContact
                     break;
             }
             txDirectory.Text = _sp.LogFile;
-            ddLogLevel.SelectedIndex = (int)_sp.LogLevelGet();
+            ddLogLevel.SelectedIndex = (int)SettingsProvider.LogLevelGet();
         }
 
         #region On Button

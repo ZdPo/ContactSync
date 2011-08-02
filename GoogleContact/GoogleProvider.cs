@@ -27,10 +27,12 @@ namespace GoogleContact
         #region global variables
         private string _userName = "";
         private string _userPwd = "";
-        private Google.Contacts.ContactsRequest _cr = null;
-        private bool _isLogon = false;
-        private static GoogleProvider _gp = null;
-        private Feed<Google.Contacts.Contact> _contactItems = null;
+        private Google.Contacts.ContactsRequest _cr;
+        private bool _isLogon;
+        private static GoogleProvider _gp;
+        private Feed<Google.Contacts.Contact> _contactItems;
+        private Feed<Google.Contacts.Group> _contactGroups;
+        private Dictionary<string, Google.Contacts.Group> _groupList;
         private bool _isUpdated = true;
         #endregion
 
@@ -83,7 +85,8 @@ namespace GoogleContact
                         LoggerProvider.Instance.Logger.Error(e);
                     }
                 }
-                LoggerProvider.Instance.Logger.Debug(_cr == null ? "Return NULL for Google.Contacts.ContactRequest" : "Return actual Google.Contacts.ContactRequest");
+                if (_cr == null)
+                    LoggerProvider.Instance.Logger.Debug("Return NULL for Google.Contacts.ContactRequest");
                 return _cr;
             }
         }
@@ -101,7 +104,7 @@ namespace GoogleContact
         }
         #endregion
 
-        #region Logon methods and Feed<ContactItems>
+        #region Log-on methods
         /// <summary>
         /// Prepare class for request with specified credentials
         /// </summary>
@@ -127,21 +130,15 @@ namespace GoogleContact
             return _isLogon;
         }
         /// <summary>
-        /// Use local credentials and prepare class for request without any touch of google
-        /// </summary>
-        /// <returns></returns>
-        public bool Logon()
-        {
-            return Logon(_userName, _userPwd);
-        }
-        /// <summary>
         /// Is class for google request prepared? (uses method Logon())
         /// </summary>
         public bool isLogon
         {
             get { return _isLogon; }
         }
+        #endregion
 
+        #region Feed read ContactItem
         /// <summary>
         /// Return contact feed. Is possible to reuse it
         /// </summary>
@@ -154,18 +151,122 @@ namespace GoogleContact
                     _contactItems = cr.GetContacts();
                     LoggerProvider.Instance.Logger.Debug("Now first time read od re-read Contact feed");
                 }
-                else
-                {
-
-                }
+                if (_contactItems == null)
+                    throw new NullReferenceException("Can't get Google.Contacts.Contact feed.");
                 _isUpdated = false;
                 return _contactItems;
             }
         }
+        /// <summary>
+        /// Reread cntact items
+        /// </summary>
         public void ClearContactItems()
         {
-            _isUpdated=true;
+            _isUpdated = true;
         }
+        #endregion
+
+        #region Feed Group
+        /// <summary>
+        /// Find detail information about group by Name
+        /// </summary>
+        /// <param name="GroupName"></param>
+        /// <returns>Return NULL when Group doesn't exist</returns>
+        public Google.Contacts.Group GetContactGroupByName(string GroupName)
+        {
+            ContactGroupsInitialize();
+            if (_groupList.ContainsKey(GroupName))
+                return _groupList[GroupName];
+            return null;
+        }
+        /// <summary>
+        /// Find detail information about Group by their ID
+        /// </summary>
+        /// <param name="GroupID"></param>
+        /// <returns>Return NULL when Group doesn't exist</returns>
+        public Google.Contacts.Group GetContactGroupByID(string GroupID)
+        {
+            ContactGroupsInitialize();
+            foreach(Google.Contacts.Group g in _groupList.Values)
+                if (g.Id==GroupID)
+                    return g;
+            return null;
+        }
+        /// <summary>
+        /// Create new group by group name
+        /// </summary>
+        /// <param name="GroupName"></param>
+        /// <returns></returns>
+        public Google.Contacts.Group AddContactGroup(string GroupName)
+        {
+            ContactGroupsInitialize();
+            Google.Contacts.Group newGroup = new Google.Contacts.Group();
+            newGroup.Title = GroupName;
+            Google.Contacts.Group createdGroup = cr.Insert(new Uri("https://www.google.com/m8/feeds/groups/default/full"), newGroup);
+            _groupList.Add(createdGroup.Title, createdGroup);
+            return createdGroup;
+        }
+        /// <summary>
+        /// Gets default Group System Group "My Contacts"
+        /// </summary>
+        /// <returns>If blanks the system Group is missing</returns>
+        public string GetMyContactDefaultGroupID()
+        {
+            ContactGroupsInitialize();
+            foreach (Google.Contacts.Group g in _groupList.Values)
+                if (g.SystemGroup == "Contacts")
+                    return g.Id;
+            return "";
+        }
+        /// <summary>
+        /// Delete non-system group
+        /// </summary>
+        /// <param name="GroupName"></param>
+        public void DeleteContactGroupName(string GroupName)
+        {
+            // Retrieving the contact group is required in order to get the Etag.
+            Google.Contacts.Group group = GetContactGroupByName(GroupName);
+            if (!group.ReadOnly)
+            {
+                try
+                {
+                    cr.Delete(group);
+                }
+                catch (GDataVersionConflictException e)
+                {
+                    LoggerProvider.Instance.Logger.Error("Can't delete Contact Group from Google {0}", GroupName);
+                    LoggerProvider.Instance.Logger.Error(e);
+                }
+                _groupList.Remove(GroupName);
+            }
+        }
+        /// <summary>
+        /// Check group list and update dictionary
+        /// </summary>
+        private void ContactGroupsInitialize()
+        {
+            if (_contactGroups == null)
+            {
+                _contactGroups = cr.GetGroups();
+                LoggerProvider.Instance.Logger.Debug("Read Google Groups");
+                if (_contactItems == null)
+                    throw new NullReferenceException("Can't get Google.Contacts.Contact feed.");
+                // Fill internal Dictionary
+                if (_groupList == null)
+                    _groupList = new Dictionary<string, Google.Contacts.Group>();
+                else
+                    _groupList.Clear();
+                foreach (Google.Contacts.Group g in _contactGroups.Entries)
+                {
+                    if (string.IsNullOrEmpty(g.SystemGroup))
+                        _groupList.Add(g.Title, g);
+                    else
+                        _groupList.Add(g.SystemGroup, g);
+
+                }
+            }
+        }
+
         #endregion
 
         #region helper function
@@ -185,7 +286,9 @@ namespace GoogleContact
             LoggerProvider.Instance.Logger.Debug("Actual on google Contact Feed {0} contact(s)", i);
             return i;
         }
+        #endregion
 
+        #region Work with Image
         /// <summary>
         /// Return Image for specific contact
         /// </summary>
@@ -193,22 +296,101 @@ namespace GoogleContact
         /// <returns></returns>
         public Image GetImage(Google.Contacts.Contact contact)
         {
-            Stream photoStream = null;
-            Image img = null;
+            Image img=null;
             try
             {
-                photoStream = cr.GetPhoto(contact);
-                img = Image.FromStream(photoStream);
+                contact.PhotoEtag = "";
+                using (Stream photoStream = cr.GetPhoto(contact))
+                    img = Image.FromStream(photoStream);
             }
-            catch (Exception e)
+            catch (GDataNotModifiedException gd)
             {
-                LoggerProvider.Instance.Logger.Error(e);
+                
+                LoggerProvider.Instance.Logger.Error("Problem when read data (GDataNotModifiedException)");
+                LoggerProvider.Instance.Logger.Error(gd);
+            }
+            catch (GDataRequestException re)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem when read data (GDataRequestException)");
+                LoggerProvider.Instance.Logger.Error(re);
             }
             return img;
         }
+
+        /// <summary>
+        /// Add or Update photo in RAW Google contact
+        /// </summary>
+        /// <param name="contact"></param>
+        /// <param name="photoContact"></param>
+        public Google.Contacts.Contact AddOrUpdateContactPhoto(Google.Contacts.Contact contact, string photoPath)
+        {
+            using (Stream s = new FileStream(photoPath, FileMode.Open))
+            {
+                LoggerProvider.Instance.Logger.Debug("Start upload picture to Google contact: {0}", photoPath);
+                string et = contact.PhotoEtag;
+                try
+                {
+                    cr.SetPhoto(contact, s);
+                    contact = cr.Retrieve<Google.Contacts.Contact>(new Uri(contact.Id));
+                }
+                catch (GDataVersionConflictException e)
+                {
+                    LoggerProvider.Instance.Logger.Error("Problem in Update photo");
+                    LoggerProvider.Instance.Logger.Error(e);
+                }
+                catch (ArgumentNullException ee)
+                {
+                    LoggerProvider.Instance.Logger.Error("Problem in Update photo");
+                    LoggerProvider.Instance.Logger.Error(ee);
+                }
+                catch (GDataRequestException ge)
+                {
+                    using (Stream receiver = ge.Response.GetResponseStream())
+                    {
+                        if (receiver != null)
+                        {
+                            StringBuilder builder = new StringBuilder(1024);
+                            using (StreamReader readStream = new StreamReader(receiver))
+                            {
+
+                                char[] buffer = new char[256];
+                                int count = readStream.Read(buffer, 0, 256);
+                                while (count > 0)
+                                {
+                                    builder.Append(buffer);
+                                    count = readStream.Read(buffer, 0, 256);
+                                }
+                                readStream.Close();
+                            }
+                            receiver.Close();
+                            LoggerProvider.Instance.Logger.Error("Error in Add or Update image to Google Contact.\r\n{0}", builder.ToString());
+                            LoggerProvider.Instance.Logger.Error(ge);
+                        }
+                    }
+                }
+                LoggerProvider.Instance.Logger.Debug("Old/New Etag is: {0}/{1}", et, contact.PhotoEtag);
+            }
+            return contact;
+        }
+        /// <summary>
+        /// Delete photo from Google contact
+        /// </summary>
+        /// <param name="contact"></param>
+        public void DeleteContactPhoto(Google.Contacts.Contact contact)
+        {
+            try
+            {
+                cr.Delete(contact.PhotoUri, contact.PhotoEtag);
+            }
+            catch (GDataVersionConflictException e)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem in delete photo");
+                LoggerProvider.Instance.Logger.Error(e);
+            }
+        }
         #endregion
 
-        #region Insert/Update/Delete
+        #region Insert/Update/Delete Contact Item
         /// <summary>
         /// Insert new contact to Google and return it's references
         /// </summary>
@@ -335,6 +517,8 @@ namespace GoogleContact
                 }
             }
         }
+
+
         #endregion
     }
 }

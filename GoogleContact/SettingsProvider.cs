@@ -14,7 +14,7 @@ namespace GoogleContact
     class SettingsProvider
     {
         private bool _isSaved = true;
-        private static SettingsProvider _instace = null;
+        private static SettingsProvider _instace;
 
         #region Creator / instance / Save /Reload
         private SettingsProvider()
@@ -44,11 +44,11 @@ namespace GoogleContact
         /// <summary>
         /// Reload settings
         /// </summary>
-        public void Reload()
-        {
-            _instace.Reload();
-            _isSaved = true;
-        }
+        //public void Reload()
+        //{
+        //    _instace.Reload();
+        //    _isSaved = true;
+        //}
         #endregion
 
         #region property
@@ -60,8 +60,6 @@ namespace GoogleContact
             get {
                 if (string.IsNullOrEmpty(Properties.Settings.Default.UserName))
                     return "";
-                if (Properties.Settings.Default.UserName.StartsWith("test"))
-                    return Properties.Settings.Default.UserName;
                 return Utils.DecryptString(Properties.Settings.Default.UserName);
             }
             set
@@ -81,8 +79,6 @@ namespace GoogleContact
             get {
                 if (string.IsNullOrEmpty(Properties.Settings.Default.Password))
                     return "";
-                if (Properties.Settings.Default.Password.StartsWith("zps"))
-                    return Properties.Settings.Default.Password;
                 return Utils.DecryptString(Properties.Settings.Default.Password); 
             }
             set
@@ -122,7 +118,7 @@ namespace GoogleContact
         /// Get setup for First time synchronization
         /// </summary>
         /// <returns></returns>
-        public Constants.FirstSetupSynchronize FirstSynchronizeGet()
+        public static Constants.FirstSetupSynchronize FirstSynchronizeGet()
         {
 
             Constants.FirstSetupSynchronize en = Constants.FirstSetupSynchronize.Outlook2Google;
@@ -131,8 +127,20 @@ namespace GoogleContact
                 en = (Constants.FirstSetupSynchronize)Enum.Parse(typeof(Constants.FirstSetupSynchronize),
                     Properties.Settings.Default.FirstSetup.ToString());
             }
-            catch
+            catch (ArgumentNullException e)
             {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(e);
+            }
+            catch (ArgumentException ee)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(ee);
+            }
+            catch (OverflowException eee)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(eee);
             }
             return en;
         }
@@ -150,16 +158,28 @@ namespace GoogleContact
         /// Get standard synchronization way
         /// </summary>
         /// <returns></returns>
-        public Constants.SetupSynchronize SynchronizeDirectionGet()
+        public static Constants.SetupSynchronize SynchronizeDirectionGet()
         {
             Constants.SetupSynchronize en = Constants.SetupSynchronize.Outlook2Google;
             try
             {
                 en = (Constants.SetupSynchronize)Enum.Parse(typeof(Constants.SetupSynchronize), Properties.Settings.Default.SyncDirection.ToString());
             }
-            catch
+            catch (ArgumentNullException e)
             {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(e);
             }
+            catch (ArgumentException ee)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(ee);
+            }
+            catch (OverflowException eee)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(eee);
+            } 
             return en;
         }
         /// <summary>
@@ -314,15 +334,27 @@ namespace GoogleContact
         /// Get current Log level
         /// </summary>
         /// <returns></returns>
-        public Constants.LogLevels LogLevelGet()
+        public static Constants.LogLevels LogLevelGet()
         {
             Constants.LogLevels en = Constants.LogLevels.Fatal;
             try
             {
                 en = (Constants.LogLevels)Enum.Parse(typeof(Constants.LogLevels), Properties.Settings.Default.LogLevel.ToString());
             }
-            catch
+            catch (ArgumentNullException e)
             {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(e);
+            }
+            catch (ArgumentException ee)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(ee);
+            }
+            catch (OverflowException eee)
+            {
+                LoggerProvider.Instance.Logger.Error("Problem in loading configuration");
+                LoggerProvider.Instance.Logger.Error(eee);
             }
             return en;
         }

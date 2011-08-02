@@ -28,16 +28,16 @@ namespace GoogleContact
     class Synchronizer : System.IDisposable
     {
         #region Private variables
-        private GoogleProvider gp = null;
-        private OutlookProvider op = null;
-        private SyncInfo syncinfo = null;
+        private GoogleProvider gp;
+        private OutlookProvider op;
+        private SyncInfo syncinfo;
         private const int MaxSteps = Constants.MaxSyncStep;
-        private Hashtable ouContacts = null;
-        private int _ouMaxContacts = 0;
-        private Hashtable goContacts = null;
-        private int _goMaxContacts = 0;
-        private int _ActualStep = 0;
-        private LastStatistic _lastStatistic = null;
+        private Hashtable ouContacts;
+        private int _ouMaxContacts;
+        private Hashtable goContacts;
+        private int _goMaxContacts;
+        private int _ActualStep;
+        private LastStatistic _lastStatistic;
         #endregion
 
         #region Constructor 
@@ -76,19 +76,37 @@ namespace GoogleContact
             ouContacts = null;
             goContacts = null;
         }
+
+        /// <summary>
+        /// Change by FxCop recomendation
+        /// http://msdn.microsoft.com/library/ms182269(VS.90).aspx
+        /// </summary>
         public void Dispose()
         {
             LoggerProvider.Instance.Logger.Debug("Synchronizer class Disposed");
-            syncinfo.Close();
-            syncinfo.Dispose();
-            syncinfo = null;
-            if (ouContacts != null)
-                ouContacts.Clear();
-            if (goContacts != null)
-                goContacts.Clear();
-            ouContacts = null;
-            goContacts = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (syncinfo != null)
+                {
+                    syncinfo.Close();
+                    syncinfo.Dispose();
+                    syncinfo = null;
+                    if (ouContacts != null)
+                        ouContacts.Clear();
+                    if (goContacts != null)
+                        goContacts.Clear();
+                    ouContacts = null;
+                    goContacts = null;
+                }
+            }
+        }
+
         #endregion
 
         #region Procedures work start
@@ -98,8 +116,8 @@ namespace GoogleContact
         public void SetupSync()
         {
             syncinfo.WorkOn = 0;
-            syncinfo.ActualStep = Constants.SyncSteps[_ActualStep];
-            LoggerProvider.Instance.Logger.Debug("SetupSync invoke Syncstep: {0}",Constants.SyncSteps[_ActualStep]);
+            syncinfo.ActualStep = Constants.SyncSteps()[_ActualStep];
+            LoggerProvider.Instance.Logger.Debug("SetupSync invoke Syncstep: {0}",Constants.SyncSteps()[_ActualStep]);
             syncinfo.Show();
         }
         /// <summary>
@@ -113,13 +131,13 @@ namespace GoogleContact
             syncinfo.ActualNextStep();
             /// need read contacts from oulook
             _ActualStep = 1;
-            LoggerProvider.Instance.Logger.Debug("Synchronize step 1 ({0})", Constants.SyncSteps[_ActualStep]);
+            LoggerProvider.Instance.Logger.Debug("Synchronize step 1 ({0})", Constants.SyncSteps()[_ActualStep]);
             UpdateSyncInfo();
             Step1ReadOutlook();
             syncinfo.ActualNextStep();
             /// need read all cntact from google
             _ActualStep = 2;
-            LoggerProvider.Instance.Logger.Debug("Synchronize step 2 ({0})", Constants.SyncSteps[_ActualStep]);
+            LoggerProvider.Instance.Logger.Debug("Synchronize step 2 ({0})", Constants.SyncSteps()[_ActualStep]);
             UpdateSyncInfo();
             Step2ReadGoogle();
             syncinfo.ActualNextStep();
@@ -129,13 +147,12 @@ namespace GoogleContact
 #endif
             #endregion
 
-            ///TODO: Now system don't delete new contact in Oneway synchronization
             #region Insert data to other side
             //if (SettingsProvider.Instance.IsAddToGoogle)
             {
                 /// Next step Insert new contact to google
                 _ActualStep = 3;
-                LoggerProvider.Instance.Logger.Debug("Synchronize step 3 ({0})", Constants.SyncSteps[_ActualStep]);
+                LoggerProvider.Instance.Logger.Debug("Synchronize step 3 ({0})", Constants.SyncSteps()[_ActualStep]);
                 UpdateSyncInfo();
                 Step3AddToGoogle();
                 syncinfo.ActualNextStep();
@@ -144,7 +161,7 @@ namespace GoogleContact
             //if (SettingsProvider.Instance.IsAddToOutlook)
             {
                 _ActualStep = 4;
-                LoggerProvider.Instance.Logger.Debug("Synchronize step 4 ({0})", Constants.SyncSteps[_ActualStep]);
+                LoggerProvider.Instance.Logger.Debug("Synchronize step 4 ({0})", Constants.SyncSteps()[_ActualStep]);
                 UpdateSyncInfo();
                 Step4AddToOutlook();
                 syncinfo.ActualNextStep();
@@ -160,7 +177,7 @@ namespace GoogleContact
             //if (SettingsProvider.Instance.IsDeleteFromOutlook)
             {
                 _ActualStep = 5;
-                LoggerProvider.Instance.Logger.Debug("Synchronize step 5 ({0})", Constants.SyncSteps[_ActualStep]);
+                LoggerProvider.Instance.Logger.Debug("Synchronize step 5 ({0})", Constants.SyncSteps()[_ActualStep]);
                 UpdateSyncInfo();
                 Step5DeleteInOutlook();
                 syncinfo.ActualNextStep();
@@ -169,7 +186,7 @@ namespace GoogleContact
             //if (SettingsProvider.Instance.IsDeleteFromGoogle)
             {
                 _ActualStep = 6;
-                LoggerProvider.Instance.Logger.Debug("Synchronize step 6 ({0})", Constants.SyncSteps[_ActualStep]);
+                LoggerProvider.Instance.Logger.Debug("Synchronize step 6 ({0})", Constants.SyncSteps()[_ActualStep]);
                 UpdateSyncInfo();
                 Step6DeleteInGoogle();
                 syncinfo.ActualNextStep();
@@ -181,7 +198,7 @@ namespace GoogleContact
             #endregion
 
             #region Update statistic on screen
-            syncinfo.GoogleContacs = goContacts.Count;
+            syncinfo.GoogleContacts = goContacts.Count;
             syncinfo.OutlookContacts = ouContacts.Count;
             syncinfo.Update();
             #endregion
@@ -189,7 +206,7 @@ namespace GoogleContact
             #region Update both side
             /// Update contact
             _ActualStep = 7;
-            LoggerProvider.Instance.Logger.Debug("Synchronize step 7 ({0})", Constants.SyncSteps[_ActualStep]);
+            LoggerProvider.Instance.Logger.Debug("Synchronize step 7 ({0})", Constants.SyncSteps()[_ActualStep]);
             UpdateSyncInfo();
             Step7Update();
             syncinfo.ActualNextStep();
@@ -230,7 +247,6 @@ namespace GoogleContact
             object works = null;
             int i = 0;
             int read = 0;
-            bool isCastOk = false;
 
             syncinfo.WorkOnNextStep();
             for (; i < _ouMaxContacts; i++)
@@ -243,19 +259,8 @@ namespace GoogleContact
                     works = it.GetNext();
                 if (works is Outlook.DistListItem)
                     continue;
-                isCastOk = false;
-                if (works is Outlook.ContactItem)
-                    try
-                    {
-                        oci = (Outlook.ContactItem)works;
-                        isCastOk = true;
-                    }
-                    catch (Exception e)
-                    {
-                        LoggerProvider.Instance.Logger.Debug(e);
-                        isCastOk = false;
-                    }
-                if (!isCastOk)
+                oci = works as Outlook.ContactItem;
+                if (works==null)
                     continue;
                 oc = new OneContact(oci);
                 if (SettingsProvider.Instance.IsFirstTime)
@@ -276,7 +281,7 @@ namespace GoogleContact
             OneContact oc = null;
             gp.ClearContactItems(); // need refresh before start next read, because ContactItems are cached in program
             _goMaxContacts = gp.CountContact();
-            syncinfo.GoogleContacs = _goMaxContacts;
+            syncinfo.GoogleContacts = _goMaxContacts;
             syncinfo.WorkOnMax = _goMaxContacts;
             int i = 0;
             syncinfo.WorkOnNextStep();
@@ -290,7 +295,7 @@ namespace GoogleContact
                 goContacts.Add(gc.Id, oc);
             }
             _lastStatistic.goReadContacts += i;
-            syncinfo.GoogleContacs = goContacts.Count;
+            syncinfo.GoogleContacts = goContacts.Count;
         }
         #endregion
 
@@ -472,13 +477,11 @@ namespace GoogleContact
                         if (SettingsProvider.Instance.IsUpdateToOutlook)
                         {
                             sb.AppendLine("Update on Outlook");
-                            //outItem.UpdateFromOther(goItem);
                             updateOut += UpdateOutlookFromGoogle(goItem, outItem) ? 1 : 0;
                         }
                         else
                         {
-                            sb.AppendLine("Update on Google by way to update");
-                            //goItem.UpdateFromOther(outItem);
+                            sb.AppendLine("Update on Google thru configurate way to update");
                             updateGo += UpdateGoogleFromOutlook(outItem, goItem) ? 1 : 0;
                         }
                     }
@@ -487,13 +490,11 @@ namespace GoogleContact
                         if (SettingsProvider.Instance.IsUpdateToGoogle)
                         {
                             sb.AppendLine("Update on Google");
-                            //goItem.UpdateFromOther(outItem);
                             updateGo += UpdateGoogleFromOutlook(outItem, goItem) ? 1 : 0;
                         }
                         else
                         {
-                            sb.AppendLine("Update on Outlook by way to update");
-                            //outItem.UpdateFromOther(goItem);
+                            sb.AppendLine("Update on Outlook thru configurate way to update");
                             updateOut += UpdateOutlookFromGoogle(goItem, outItem) ? 1 : 0;
                         }
                     }
@@ -513,14 +514,15 @@ namespace GoogleContact
         /// </summary>
         private void UpdateSyncInfo()
         {
-            syncinfo.ActualStep = Constants.SyncSteps[_ActualStep];
+            syncinfo.ActualStep = Constants.SyncSteps()[_ActualStep];
             //syncinfo.ActualStepIndex = _ActualStep;
         }
+#if (DUMP_CONTACTS)
         /// <summary>
         /// Dump contact to Log. This is uses for debug only
         /// </summary>
         /// <param name="contacts">Referces to one of local list</param>
-        private void DumpContactToLog(ref Hashtable contacts)
+        private static void DumpContactToLog(ref Hashtable contacts)
         {
 #if (DEBUG)
             foreach (OneContact c in contacts.Values)
@@ -529,6 +531,7 @@ namespace GoogleContact
             }
 #endif
         }
+#endif
         #endregion
 
         #region AddMetods/Detele/Update one contact method
@@ -656,7 +659,7 @@ namespace GoogleContact
         /// <param name="sourceGoogle">Source Google contact</param>
         /// <param name="destinationOutlook">destination Outlook contact</param>
         /// <returns>True if delete success</returns>
-        internal bool UpdateOutlookFromGoogle(OneContact sourceGoogle, OneContact destinationOutlook)
+        internal static bool UpdateOutlookFromGoogle(OneContact sourceGoogle, OneContact destinationOutlook)
         {
             if (sourceGoogle.IsSourceOutlook || (!destinationOutlook.IsSourceOutlook))
                 return false;
@@ -670,7 +673,7 @@ namespace GoogleContact
         /// <param name="sourceGoogle">Source outlook contact</param>
         /// <param name="destinationOutlook">destination google contact</param>
         /// <returns>True if delete success</returns>
-        internal bool UpdateGoogleFromOutlook(OneContact sourceOutlook, OneContact destinationGoogle)
+        internal static bool UpdateGoogleFromOutlook(OneContact sourceOutlook, OneContact destinationGoogle)
         {
             if ((!sourceOutlook.IsSourceOutlook) || destinationGoogle.IsSourceOutlook)
                 return false;

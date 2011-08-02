@@ -1,7 +1,4 @@
-﻿///#define NoImage
-/// Now is problem in image define in project
-/// Image save to C:\Users\[UserName]\AppData\Local\Temp\
-///#define ANNIVESARY_NOT_WORK
+﻿///#define ANNIVESARY_NOT_WORK
 /// Now problem in annivesary - define in project
 using System;
 using System.Collections.Generic;
@@ -24,9 +21,6 @@ using Office = Microsoft.Office.Core;
 
 namespace GoogleContact
 {
-#if (NoImage)
-#warning NoImage - system doesn't work with Image. Problem when read and save to Google. 
-#endif
 #if (ANNIVESARY_NOT_WORK)
 #warning ANNIVESARY_NOT_WORK - system doesn't work with Annivesary. Problem when save to Google.
 #endif
@@ -48,7 +42,7 @@ namespace GoogleContact
             if (string.IsNullOrEmpty(SourceData.Id)) /// neni EntryID a to potrebuji chyba
             {
                 LoggerProvider.Instance.Logger.Error("Google contact does'n has ID");
-                throw new Exception("Google contact does'n has ID");
+                throw new EvaluateException("Google contact does'n has ID");
             }
             _MyID = SourceData.Id;
             _rawSource = SourceData;
@@ -58,7 +52,7 @@ namespace GoogleContact
             {
                 foreach (ExtendedProperty en in SourceData.ExtendedProperties) // vybereme tu správnou a vyplnime hodnoty
                 {
-                    if (en.Name == Constants.NameGoogleExtendProperies)
+                    if (en.Name == Constants.NameGoogleExtendProperties)
                     {
                         _referenceID = GetSavedReplicaID(en.Value);
                     }
@@ -88,10 +82,17 @@ namespace GoogleContact
 #endif
             Notes = SourceData.Content;
 
-#if (!NoImage)
             if (!string.IsNullOrEmpty(SourceData.PhotoEtag))
+            {
                 ImagePath = Utils.GetContactPicturePath(SourceData);
-#endif
+                ImageHash = Utils.PictureMD5(ImagePath);
+                ImageETag = SourceData.PhotoEtag;
+            }
+            else
+            {
+                Utils.CleanupContactPictures(Utils.CreateContactPictureName((Google.Contacts.Contact)_rawSource));
+            }
+            
             if (SourceData.IMs.Count > 0) // Existuje IM
             {
                 string imHelp = "";
@@ -158,20 +159,20 @@ namespace GoogleContact
                             break;
                         case "work_fax":
                             if (notFaxbus)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_work),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.Fax_work));
+                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork),
+                                    new PhoneDetail(pn.Value, Constants.PhoneType.FaxWork));
                             notFaxbus = true;
                             break;
                         case ContactsRelationships.IsHomeFax:
                             if (notFaxHome)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_home),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.Fax_home));
+                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome),
+                                    new PhoneDetail(pn.Value, Constants.PhoneType.FaxHome));
                             notFaxHome = true;
                             break;
                         case ContactsRelationships.IsWorkFax:
                             if (notFaxbus)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_work),
-                                  new PhoneDetail(pn.Value, Constants.PhoneType.Fax_work));
+                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork),
+                                  new PhoneDetail(pn.Value, Constants.PhoneType.FaxWork));
                             notFaxbus = true;
                             break;
                     }
@@ -265,7 +266,7 @@ namespace GoogleContact
             }
             #endregion
 
-            #region other
+            #region Other (web, category)
             if (SourceData.ContactEntry.Websites.Count > 0)
             {
                 foreach (Website en in SourceData.ContactEntry.Websites)
@@ -274,6 +275,23 @@ namespace GoogleContact
                     {
                         WebServer = en.Href;
                         break;
+                    }
+                }
+            }
+            if (SourceData.GroupMembership.Count > 0)
+            {
+                Google.Contacts.Group g;
+                foreach (GroupMembership ms in SourceData.GroupMembership)
+                {
+                    g=GoogleProvider.GetProvider.GetContactGroupByID(ms.HRef);
+                    if (g != null)
+                    {
+                        if (g.ReadOnly)
+                        {
+                            if (g.SystemGroup == "Contacts")
+                                continue;
+                        }
+                        Category.Add(g.Title);
                     }
                 }
             }
@@ -307,7 +325,7 @@ namespace GoogleContact
             if (string.IsNullOrEmpty(SourceData.EntryID)) /// neni EntryID a to potrebuji chyba
             {
                 LoggerProvider.Instance.Logger.Error("Outlook contact does'n has EntryID");
-                throw new Exception("Outlook contact does'n has EntryID");
+                throw new EvaluateException("Outlook contact does'n has EntryID");
             }
             _MyID = SourceData.EntryID; // zadame ID
             _rawSource = SourceData;
@@ -332,12 +350,13 @@ namespace GoogleContact
             if (SourceData.Birthday < DateTime.Parse("1/1/4000"))
                 Birthday = SourceData.Birthday;
             Notes = SourceData.Body;
-#if (!NoImage)
             if (SourceData.HasPicture)
             {
                 ImagePath = Utils.GetContactPicturePath(SourceData);
+                ImageHash = Utils.PictureMD5(ImagePath);
             }
-#endif
+            else
+                Utils.CleanupContactPictures(Utils.CreateContactPictureName((Outlook.ContactItem)_rawSource));
             IM = string.IsNullOrEmpty(SourceData.IMAddress) ? "" : SourceData.IMAddress;
             #endregion
 
@@ -358,11 +377,11 @@ namespace GoogleContact
                 Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Other),
                     new PhoneDetail(SourceData.OtherTelephoneNumber, Constants.PhoneType.Other));
             if (!string.IsNullOrEmpty(SourceData.BusinessFaxNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_work),
-                    new PhoneDetail(SourceData.BusinessFaxNumber, Constants.PhoneType.Fax_work));
+                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork),
+                    new PhoneDetail(SourceData.BusinessFaxNumber, Constants.PhoneType.FaxWork));
             if (!string.IsNullOrEmpty(SourceData.HomeFaxNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_home),
-                    new PhoneDetail(SourceData.HomeFaxNumber, Constants.PhoneType.Fax_home));
+                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome),
+                    new PhoneDetail(SourceData.HomeFaxNumber, Constants.PhoneType.FaxHome));
             #endregion
 
             #region adresy
@@ -398,9 +417,30 @@ namespace GoogleContact
                 JobTitle = SourceData.JobTitle;
             #endregion
 
-            #region other
+            #region Other (web, category)
             if (!string.IsNullOrEmpty(SourceData.WebPage))
                 WebServer = SourceData.WebPage;
+            Category.Clear();
+            if (!string.IsNullOrEmpty(SourceData.Categories))
+            {
+                char[] splits = { ';' };
+               // if (SourceData.Categories.Contains(';'))
+                {
+                    string[] spl;
+                    LoggerProvider.Instance.Logger.Debug("Contact has next category {0}",SourceData.Categories);
+                    spl = SourceData.Categories.Split(splits, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in spl)
+                    {
+                        Category.Add(s.Trim());
+                        OutlookProvider.Instance.UpdateCategory(s.Trim());
+                    }
+                }
+                //else
+                //{
+                //    Category.Add(SourceData.Categories.Trim());
+                //    OutlookProvider.Instance.UpdateCategory(s.Trim());
+                //}
+            }
             #endregion
 
             MD5ReCountSelf();
@@ -445,7 +485,7 @@ namespace GoogleContact
         public string ContactID
         {
             get { return _MyID; }
-            set { _MyID = value; }
+            //set { _MyID = value; }
         }
         /// <summary>
         /// Return true if source is Outlook ContactItem
@@ -499,7 +539,7 @@ namespace GoogleContact
             {
                 foreach (ExtendedProperty en in ((Google.Contacts.Contact)_rawSource).ExtendedProperties) // vybereme tu správnou a vyplnime hodnoty
                 {
-                    if (en.Name == Constants.NameGoogleExtendProperies)
+                    if (en.Name == Constants.NameGoogleExtendProperties)
                     {
                         ep = en;
                         break;
@@ -510,7 +550,7 @@ namespace GoogleContact
             }
             if (ep == null) 
             {
-                ep = new ExtendedProperty(OutlookRef, Constants.NameGoogleExtendProperies);
+                ep = new ExtendedProperty(OutlookRef, Constants.NameGoogleExtendProperties);
                 ((Google.Contacts.Contact)_rawSource).ExtendedProperties.Add(ep);
             }
             else 
@@ -555,15 +595,15 @@ namespace GoogleContact
             LoggerProvider.Instance.Logger.Debug("Detele form {4}: {0} {1} - {2}-{3}", LastName, FirstName, _MyID, _referenceID, _isFromOutlook ? "Outlook" : "Google");
             if (_isFromOutlook) // If it's from outlook
             {
-                try
-                {
+                //try
+                //{
                     ((Outlook.ContactItem)_rawSource).Delete();
-                }
-                catch (Exception e)
-                {
-                    LoggerProvider.Instance.Logger.Error("Problem when delete contact from Outlook");
-                    LoggerProvider.Instance.Logger.Error(e);
-                }
+                //}
+                //catch (Exception e)
+                //{
+                //    LoggerProvider.Instance.Logger.Error("Problem when delete contact from Outlook");
+                //    LoggerProvider.Instance.Logger.Error(e);
+                //}
                 return;
             }
             // It's from google
@@ -598,7 +638,7 @@ namespace GoogleContact
                 {
                     foreach (ExtendedProperty en in ((Google.Contacts.Contact)_rawSource).ExtendedProperties) // Select right value and fill it
                     {
-                        if (en.Name == Constants.NameGoogleExtendProperies)
+                        if (en.Name == Constants.NameGoogleExtendProperties)
                         {
                             ep = en;
                             break;
@@ -609,7 +649,7 @@ namespace GoogleContact
                 }
                 if (ep == null)
                 {
-                    ep = new ExtendedProperty(OutlookRef, Constants.NameGoogleExtendProperies);
+                    ep = new ExtendedProperty(OutlookRef, Constants.NameGoogleExtendProperties);
                     ((Google.Contacts.Contact)_rawSource).ExtendedProperties.Add(ep);
                 }
                 else
@@ -669,11 +709,18 @@ namespace GoogleContact
 #endif
             if (Birthday > DateTime.MinValue)
                 outContact.Birthday = Birthday;
-#if (!NoImage)
-            //TODO: Need work on image
-            //if (image != null)
-            //    outContact.AddPicture();
-#endif
+
+            if (!string.IsNullOrEmpty(ImagePath))
+            {
+                LoggerProvider.Instance.Logger.Debug("Update Outlook image to: {0}", ImagePath);
+                if (outContact.HasPicture)
+                    outContact.RemovePicture();
+                outContact.AddPicture(ImagePath);
+            }
+            else
+                if (outContact.HasPicture)
+                    outContact.RemovePicture();
+
             outContact.Body = DataOrEmpty(Notes);
             #endregion
 
@@ -698,12 +745,12 @@ namespace GoogleContact
                 outContact.OtherTelephoneNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Other)]).PhoneNumber;
             else
                 outContact.OtherTelephoneNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_work)))
-                outContact.BusinessFaxNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_work)]).PhoneNumber;
+            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork)))
+                outContact.BusinessFaxNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork)]).PhoneNumber;
             else
                 outContact.BusinessFaxNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_home)))
-                outContact.HomeFaxNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_home)]).PhoneNumber;
+            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome)))
+                outContact.HomeFaxNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome)]).PhoneNumber;
             else
                 outContact.HomeFaxNumber = string.Empty;
             #endregion
@@ -820,6 +867,16 @@ namespace GoogleContact
 
             #region Ostatni
             outContact.WebPage = DataOrEmpty(WebServer);
+            outContact.Categories="";
+            if (Category.Count>0)
+                foreach (string cat in Category)
+                {
+                    OutlookProvider.Instance.UpdateCategory(cat);
+                    if (string.IsNullOrEmpty(outContact.Categories))
+                        outContact.Categories = cat;
+                    else
+                        outContact.Categories = string.Format("{0}; {1}", outContact.Categories, cat);
+                }
             #endregion
 
             return outContact;
@@ -832,9 +889,50 @@ namespace GoogleContact
         /// <returns></returns>
         private Google.Contacts.Contact SaveToGoogle(Google.Contacts.Contact goContact)
         {
+            #region Update Image on Google Contact
+            ///For start need change it and re-read raw contact
+            if (!string.IsNullOrEmpty(ImagePath))
+            {
+                try
+                {
+                    goContact = GoogleProvider.GetProvider.AddOrUpdateContactPhoto(goContact, ImagePath);
+                }
+                catch (GDataRequestException ge)
+                {
+                    using (Stream receiver = ge.Response.GetResponseStream())
+                    {
+                        if (receiver != null)
+                        {
+                            StringBuilder builder = new StringBuilder(1024);
+                            using (StreamReader readStream = new StreamReader(receiver))
+                            {
+
+                                char[] buffer = new char[256];
+                                int count = readStream.Read(buffer, 0, 256);
+                                while (count > 0)
+                                {
+                                    builder.Append(buffer);
+                                    count = readStream.Read(buffer, 0, 256);
+                                }
+                                readStream.Close();
+                            }
+                            receiver.Close();
+                            LoggerProvider.Instance.Logger.Error("Error in Add or Update image to Google Contact.\r\n{0}", builder.ToString());
+                            LoggerProvider.Instance.Logger.Error(ge);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(((Google.Contacts.Contact)_rawSource).PhotoEtag))
+                    GoogleProvider.GetProvider.DeleteContactPhoto((Google.Contacts.Contact)_rawSource);
+            }
+            #endregion
+
             if (string.IsNullOrEmpty(MD5selfCount))
                 MD5ReCountSelf();
-            ExtendedProperty ep = new ExtendedProperty(CreateReferenceID(), Constants.NameGoogleExtendProperies);
+            ExtendedProperty ep = new ExtendedProperty(CreateReferenceID(), Constants.NameGoogleExtendProperties);
             LoggerProvider.Instance.Logger.Debug("Save to Google RefID {0}", CreateReferenceID());
 
             #region Personal data
@@ -866,10 +964,6 @@ namespace GoogleContact
             }
             else
                 goContact.ContactEntry.Birthday = null;
-#if (!NoImage)
-
-            ///TODO: Add image to contact
-#endif
             goContact.IMs.Clear();
             if (!string.IsNullOrEmpty(IM))
             {
@@ -932,7 +1026,7 @@ namespace GoogleContact
                 pn.Rel = ContactsRelationships.IsOther;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_work);
+            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork);
             if (Telephone.ContainsKey(sName))
             {
                 pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
@@ -941,7 +1035,7 @@ namespace GoogleContact
                 pn.Rel = ContactsRelationships.IsWorkFax;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Fax_home);
+            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome);
             if (Telephone.ContainsKey(sName))
             {
                 pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
@@ -1053,11 +1147,36 @@ namespace GoogleContact
                 ws.Rel = "work";
                 goContact.ContactEntry.Websites.Add(ws);
             }
+            /// Every contact is add to DefaultGroup
+            goContact.GroupMembership.Clear();
+            GroupMembership gpdefault = new GroupMembership();
+            gpdefault.HRef = GoogleProvider.GetProvider.GetMyContactDefaultGroupID();
+            goContact.GroupMembership.Add(gpdefault);
+            /// now add to other group
+            if (Category.Count > 0)
+            {
+                Google.Contacts.Group group;
+                foreach (string cat in Category)
+                {
+                    group=GoogleProvider.GetProvider.GetContactGroupByName(cat);
+                    if (group == null) // takova existuje tak je v seznamu
+                    {
+                        group=GoogleProvider.GetProvider.AddContactGroup(cat);
+                    }
+                    if (group!=null)
+                    {
+                        gpdefault = new GroupMembership();
+                        gpdefault.HRef = group.Id;
+                        goContact.GroupMembership.Add(gpdefault);
+                    }
+                }
+            }
+
             #endregion
 
             #region Fill Outlook ID and so On
             for (int j = 0; j < goContact.ExtendedProperties.Count; j++)
-                if (goContact.ExtendedProperties[j].Name == Constants.NameGoogleExtendProperies)
+                if (goContact.ExtendedProperties[j].Name == Constants.NameGoogleExtendProperties)
                 {
                     goContact.ExtendedProperties.RemoveAt(j);
                     break;
@@ -1066,24 +1185,13 @@ namespace GoogleContact
             {
                 goContact.ExtendedProperties.Add(ep);
             }
-            catch (Exception e)
+            catch (NullReferenceException e)
             {
                 LoggerProvider.Instance.Logger.Debug(e);
             }
-            ///TODO: check other way to create default group
-            isFill = false;
-            for (int j = 0; j < goContact.GroupMembership.Count; j++)
+            catch (ArgumentNullException ee)
             {
-                if (goContact.GroupMembership[j].HRef == "http://www.google.com/m8/feeds/groups/test.zdepok%40gmail.com/base/6")
-                {
-                    isFill = true;
-                }
-            }
-            if (!isFill)
-            {
-                GroupMembership gpdefault = new GroupMembership();
-                gpdefault.HRef = "http://www.google.com/m8/feeds/groups/test.zdepok%40gmail.com/base/6";
-                goContact.GroupMembership.Add(gpdefault);
+                LoggerProvider.Instance.Logger.Debug(ee);
             }
             #endregion
 

@@ -13,15 +13,15 @@ namespace GoogleContact
     {
         private int _maxComplete = 100;
         private int _maxWork = 100;
-        private int _ouContacts=0;
-        private int _goContact=0;
-        private int _onWork = 0;
+        private int _ouContacts;
+        private int _goContact;
+        private int _onWork;
         //private int _onStep = 0;
 
-        public SyncInfo(int MaxComplete)
+        public SyncInfo(int maxComplete)
         {
             InitializeComponent();
-            _maxComplete = MaxComplete;
+            _maxComplete = maxComplete;
             LoggerProvider.Instance.Logger.Debug("Class SyncInfo created");
         }
 
@@ -46,13 +46,14 @@ namespace GoogleContact
         /// <summary>
         /// Set number of google contacts
         /// </summary>
-        public int GoogleContacs
+        public int GoogleContacts
         {
             set
             {
                 _goContact = value;
                 ShowActualData();
             }
+            get { return _goContact; }
         }
         /// <summary>
         /// Set number of outlook contacts
@@ -64,6 +65,7 @@ namespace GoogleContact
                 _ouContacts = value;
                 ShowActualData();
             }
+            get { return _ouContacts; }
         }
         /// <summary>
         /// Now work on record
@@ -75,6 +77,7 @@ namespace GoogleContact
                 _onWork = value;
                 ShowActualData();
             }
+            get { return _onWork; }
         }
 
         public int WorkOnMax
@@ -88,6 +91,7 @@ namespace GoogleContact
                 pbWork.Update();
                 ShowActualData();
             }
+            get { return _maxWork; }
         }
         #endregion
         

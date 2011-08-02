@@ -7,7 +7,12 @@ namespace GoogleContact
 {
     public class Constants
     {
-        public const string ApplicationName = "ZdPo.GoogleContactSynchronizer";
+        /// <summary>
+        /// By FxCop recomendation
+        /// </summary>
+        private Constants()
+        {}
+        public const string ApplicationName = "Pok.Zde.GoogleContactSynchronizer";
         /// <summary>
         /// Jmeno promene pro identifikaci odkazu na google account
         /// </summary>
@@ -19,15 +24,15 @@ namespace GoogleContact
         /// <summary>
         /// Format pro Google Extend properties obsahujici unikatní ID z Outlooku
         /// </summary>
-        public const string FormatGoogleExtendProperies = "[{0}]";
+        public const string FormatGoogleExtendProperties = "[{0}]";
         /// <summary>
         /// Jmeno pro Google Extended Properties v Outlooku
         /// </summary>
-        public const string NameGoogleExtendProperies = "PokZdeGC_Outlook";
+        public const string NameGoogleExtendProperties = "PokZdeGC_Outlook";
         /// <summary>
         /// Typy telefonnych cisel
         /// </summary>
-        public enum PhoneType { Mobile = 0, Home, Business1, Business2, Other, Fax_home, Fax_work };
+        public enum PhoneType { Mobile = 0, Home, Business1, Business2, Other, FaxHome, FaxWork };
         /// <summary>
         /// typy adres
         /// </summary>
@@ -43,13 +48,21 @@ namespace GoogleContact
         /// </summary>
         public const string FormatSyncActual = "{0:# ##0}";
         /// <summary>
-        /// Steps for both side replication
+        /// Modify by FxCop recomendation to private and use static method
+        /// http://msdn.microsoft.com/library/ms182299(VS.90).aspx
         /// </summary>
-        public static readonly string[] SyncSteps = {"Start work",
+        private static readonly string[] _SyncSteps = {"Start work",
                                                         "Read Outlook contacts", "Read Google contacts", 
                                                         "Add new Google contacts", "Add new outlook contact", 
                                                         "Delete Outlook contacts", "Delete Google Contacts",  
                                                         "Compare contacts"};
+        /// <summary>
+        /// Steps for both side replication
+        /// </summary>
+        public static string[] SyncSteps()
+        {
+            return (string[])_SyncSteps.Clone(); 
+        }
         /// <summary>
         /// Number of steps in Both side synchronization
         /// </summary>

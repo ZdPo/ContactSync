@@ -9,10 +9,13 @@ using System.Windows.Forms;
 
 namespace GoogleContact
 {
-    public partial class AutenticateRequest : Form
+    /// <summary>
+    /// Rename by bad spelling
+    /// </summary>
+    public partial class AuthenticateRequest : Form
     {
-        private bool _isAccept = false;
-        public AutenticateRequest()
+        private bool _isAccept;
+        public AuthenticateRequest()
         {
             InitializeComponent();
         }
@@ -35,6 +38,7 @@ namespace GoogleContact
         public string UserName
         {
             set { txtUsername.Text = value; }
+            get { return txtUsername.Text; }
         }
         /// <summary>
         /// Get write password

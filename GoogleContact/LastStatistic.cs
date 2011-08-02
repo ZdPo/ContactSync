@@ -11,18 +11,18 @@ namespace GoogleContact
     class LastStatistic
     {
         #region Local variable
-        private int _goReadContacts = 0;
-        private int _goDeleteContacts = 0;
-        private int _goUpdateContacts = 0;
-        private int _goInsertContacts = 0;
-        private int _goNotChangeConatcts = 0;
-        private int _ouReadContacts = 0;
-        private int _ouDeleteContacts = 0;
-        private int _ouUpdateContacts = 0;
-        private int _ouInsertContacts = 0;
-        private int _ouNotChangeConatcts = 0;
+        private int _goReadContacts;
+        private int _goDeleteContacts;
+        private int _goUpdateContacts;
+        private int _goInsertContacts;
+        private int _goNotChangeConatcts;
+        private int _ouReadContacts;
+        private int _ouDeleteContacts;
+        private int _ouUpdateContacts;
+        private int _ouInsertContacts;
+        private int _ouNotChangeConatcts;
         private DateTime _LastUpdate = DateTime.Now;
-        private bool _isSynchronize=false;
+        private bool _isSynchronize;
         #endregion
 
         #region method of class

@@ -5,11 +5,13 @@ using System.Text;
 using Microsoft.Office.Tools.Ribbon;
 using System.Windows.Forms;
 
+using Google.GData.Client;
+
 namespace GoogleContact
 {
     public partial class GCRibbon
     {
-        private Synchronizer synchr = null;
+        private Synchronizer synchr;
         /// <summary>
         /// Uses for last statistic
         /// </summary>
@@ -40,7 +42,7 @@ namespace GoogleContact
             using (ConnectionSettings c = new ConnectionSettings())
             {
                 LoggerProvider.Instance.Logger.Debug("Click on ConnectionSettings");
-                System.Windows.Forms.DialogResult dial = c.ShowDialog();
+                c.ShowDialog();
                 lastStatistic.Clear();
             }
             if (SettingsProvider.Instance.UserName.Length > 0)
@@ -62,10 +64,10 @@ namespace GoogleContact
             LoggerProvider.Instance.Logger.Debug("Click on Synchronize button");
             if ((SettingsProvider.Instance.UserPassword.Length == 0) || !SettingsProvider.Instance.IsRemember)
             {
-                using (AutenticateRequest ar = new AutenticateRequest())
+                using (AuthenticateRequest ar = new AuthenticateRequest())
                 {
                     ar.UserName = SettingsProvider.Instance.UserName;
-                    System.Windows.Forms.DialogResult dial = ar.ShowDialog();
+                    ar.ShowDialog();
                     if (!ar.IsAccept)
                         return;
                     GoogleProvider.GetProvider.Logon(SettingsProvider.Instance.UserName, ar.Password);
@@ -76,16 +78,37 @@ namespace GoogleContact
             {
                 synchr.Synchronize();
             }
+            ///TODO: Need change exception type to catch
+            catch (GDataRequestException ge)
+            {
+                MessageBox.Show("Problem in connect to Google site. Detail data is in Log file.", "Synchronize to Google",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
+                LoggerProvider.Instance.Logger.Error(ge);
+            }
+            catch (CaptchaRequiredException ca)
+            {
+                MessageBox.Show("Problem in connect to Google site. Google required CAPTCHA autorization. Detail data is in Log file.", "Synchronize to Google",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
+                LoggerProvider.Instance.Logger.Error(ca);
+            }
+            catch (NullReferenceException ne)
+            {
+                MessageBox.Show("Problem in connect to Google site. Problem when read Google.Contacts.Contact Feed. Detail data is in Log file.", "Synchronize to Google",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
+                LoggerProvider.Instance.Logger.Error(ne);
+            }
             catch (Exception ex)
             {
-                MessageBox.Show("Problem in synchronize. Data is in Log file.", "Synchronize to Google", MessageBoxButtons.OK);
+                MessageBox.Show("Problem in synchronize. Data is in Log file.", "Synchronize to Google",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
                 LoggerProvider.Instance.Logger.Error(ex);
             }
             LoggerProvider.Instance.Logger.Debug("Statistic after synchronize\r\n{0}", lastStatistic.StatisticString());
-            /// in nest release need stand Outlook and Google contacts for better speed in update
+            /// in next release don't dispose because use memored Outlook and Google contacts for better speed in update
             synchr.Dispose();
             synchr = null;
-            MessageBox.Show(lastStatistic.StatisticString(), "Statistic", MessageBoxButtons.OK);
+            MessageBox.Show(lastStatistic.StatisticString(), "Statistic", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information,MessageBoxDefaultButton.Button1,MessageBoxOptions.ServiceNotification);
         }
 
         /// <summary>

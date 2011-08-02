@@ -18,6 +18,11 @@ namespace GoogleContact
     class Utils
     {
         /// <summary>
+        /// Based of FxCop recomendation
+        /// </summary>
+        private Utils()
+        {}
+        /// <summary>
         /// Calculate MD5 HASH from source string
         /// </summary>
         /// <param name="source"></param>
@@ -142,6 +147,25 @@ namespace GoogleContact
         }
 
         /// <summary>
+        /// Create name for Contact picture from Outlook
+        /// </summary>
+        /// <param name="contact"></param>
+        /// <returns></returns>
+        public static string CreateContactPictureName(Outlook.ContactItem contact)
+        {
+            return string.Format("{0}\\Contact_{1}.jpg", Path.GetDirectoryName(PathToTempPicture()), contact.EntryID);
+        }
+        /// <summary>
+        /// Create name for Contact picture from Google
+        /// </summary>
+        /// <param name="contact"></param>
+        /// <returns></returns>
+        public static string CreateContactPictureName(Google.Contacts.Contact contact)
+        {
+            Uri ur = new Uri(contact.Id);
+            return string.Format("{0}\\Contact_{1}.jpg", Path.GetDirectoryName(PathToTempPicture()), ur.Segments[ur.Segments.Length-1]);
+        }
+        /// <summary>
         /// Return file name in temporary file with Contact image
         /// Source code uses from http://www.scip.be/index.php?Page=ArticlesNET07
         /// </summary>
@@ -149,8 +173,8 @@ namespace GoogleContact
         /// <returns></returns>
         public static string GetContactPicturePath(Outlook.ContactItem contact)
         {
-            string path=Path.GetTempPath();
-            string picturePath = "";
+            //string path = PathToTempPicture();
+            string picturePath = CreateContactPictureName(contact);
 
             if (contact.HasPicture)
             {
@@ -158,24 +182,54 @@ namespace GoogleContact
                 {
                     if (att.DisplayName == "ContactPicture.jpg")
                     {
-                        try
+                        if (File.Exists(picturePath))
                         {
-                            picturePath = string.Format("{0}\\Contact_{1}.jpg", Path.GetDirectoryName(path), contact.EntryID);
-                            LoggerProvider.Instance.Logger.Debug(string.Format("Try write image to:[{0}]", picturePath));
-                            if (!File.Exists(picturePath))
-                                att.SaveAsFile(picturePath);
+                            if (File.GetCreationTime(picturePath) < contact.LastModificationTime)
+                            {
+                                CleanupContactPictures(picturePath);
+                            }
+                            else
+                                continue;
                         }
-                        catch (Exception e)
-                        {
-                            LoggerProvider.Instance.Logger.Error(e);
-                            picturePath = "";
-                        }
+                    }
+                    try
+                    {
+                        LoggerProvider.Instance.Logger.Debug(string.Format("Try write image to:[{0}]", picturePath));
+                        att.SaveAsFile(picturePath);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        LoggerProvider.Instance.Logger.Error(e);
+                        picturePath = "";
+                    }
+                    catch (System.IO.PathTooLongException lp)
+                    {
+                        LoggerProvider.Instance.Logger.Error(lp);
+                        picturePath = "";
                     }
                 }
             }
-
+            else // if in contact not image need clear it's from temp directory
+            {
+                if (File.Exists(picturePath))
+                    CleanupContactPictures(picturePath);
+            }
             return picturePath;
         }
+        /// <summary>
+        /// Return creation date for saved image
+        /// </summary>
+        /// <param name="picturePath"></param>
+        /// <returns></returns>
+        public static string PictureMD5(string imagePath)
+        {
+            /// TODO: need found mehod for image comparsion
+            if (!File.Exists(imagePath))
+                return "";
+
+            return "";    
+        }
+
         /// <summary>
         /// Return image photo saved on HDD
         /// </summary>
@@ -183,25 +237,24 @@ namespace GoogleContact
         /// <returns></returns>
         public static string GetContactPicturePath(Google.Contacts.Contact contact)
         {
-            string path = Path.GetTempPath();
-            string picturePath = "";
-            picturePath = string.Format("{0}\\Contact_{1}.jpg",Path.GetDirectoryName(path), contact.PhotoEtag);
-            LoggerProvider.Instance.Logger.Debug(string.Format("Try write image to:[{0}]", picturePath));
-            if (!File.Exists(picturePath))
+            string picturePath = CreateContactPictureName(contact);
+            if (File.Exists(picturePath))
             {
-                Image image = GoogleProvider.GetProvider.GetImage(contact);
-                try
+                if (File.GetCreationTime(picturePath) >= contact.Updated)
                 {
-                        image.Save(picturePath);
+                    return picturePath;
                 }
-                catch (Exception e)
-                {
-                    LoggerProvider.Instance.Logger.Error(e);
-                    picturePath = "";
-                }
+                CleanupContactPictures(picturePath);
             }
-
-            return picturePath;
+            Image image = GoogleProvider.GetProvider.GetImage(contact);
+            if (image != null)
+            {
+                LoggerProvider.Instance.Logger.Debug(string.Format("Try write image to:[{0}]", picturePath));
+                image.Save(picturePath);
+                return picturePath;
+            }
+            LoggerProvider.Instance.Logger.Error("Proble read image from Google {0}", picturePath);
+            return "";
         }
 
         /// <summary>
@@ -210,15 +263,16 @@ namespace GoogleContact
         /// <param name="path"></param>
         public static void CleanupContactAllPictures()
         {
-            string path = Path.GetTempPath();
+            string path = PathToTempPicture();
             foreach (string picturePath in Directory.GetFiles(path, "Contact_*.jpg"))
             {
                 try
                 {
                     File.Delete(picturePath);
                 }
-                catch (Exception e)
+                catch (ArgumentNullException e)
                 {
+                    LoggerProvider.Instance.Logger.Error("Specified fiel don't exist.");
                     LoggerProvider.Instance.Logger.Error(e);
                 }
             }
@@ -231,13 +285,43 @@ namespace GoogleContact
         {
             try
             {
-                if (!File.Exists(picturePath))
+                if (File.Exists(picturePath))
                     File.Delete(picturePath);
             }
-            catch (Exception e)
+            catch (ArgumentNullException e)
             {
+                LoggerProvider.Instance.Logger.Error("Can't delete picture {0}", picturePath);
                 LoggerProvider.Instance.Logger.Error(e);
             }
+        }
+        /// <summary>
+        /// Return name to temporary path for this aplication
+        /// </summary>
+        /// <returns></returns>
+        public static string PathToTempPicture()
+        {
+            StringBuilder path = new StringBuilder(Path.GetTempPath());
+            path.Append(Constants.ApplicationName);
+            path.Append("\\");
+            if (!Directory.Exists(path.ToString()))
+                try
+                {
+                    Directory.CreateDirectory(path.ToString());
+                    LoggerProvider.Instance.Logger.Debug("Create temporary directory for images: {0}", path.ToString());
+                }
+                catch (DirectoryNotFoundException de)
+                {
+                    LoggerProvider.Instance.Logger.Error(de);
+                    path.Remove(0, path.Length);
+                    path.Append(Path.GetTempPath());
+                }
+                catch (UnauthorizedAccessException ua)
+                {
+                    LoggerProvider.Instance.Logger.Error(ua);
+                    path.Remove(0, path.Length);
+                    path.Append(Path.GetTempPath());
+                }
+            return path.ToString();
         }
     }
 }
