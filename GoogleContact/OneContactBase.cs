@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
+using System.IO;
+using System.Xml.Serialization;
 
 using Google.GData.Contacts;
 using Google.GData.Client;
@@ -10,103 +12,156 @@ using Google.GData.Extensions;
 
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
+using System.Xml;
 
 namespace GoogleContact
 {
     /// <summary>
-    /// This is a bse for one contact store in RAM
+    /// This is a bse for one contact store in RAM. Data are independ of source, it's normalize do same structure and prepare for serialization.
     /// </summary>
-    class OneContactBase
+    [XmlRoot(ElementName = "OneContactBase", DataType = "GoogleContact.OneContactBase", IsNullable = false)]
+    public class OneContactBase // : IXmlSerializable
     {
+        #region Constructor
+        /// <summary>
+        /// It's only for serialization
+        /// </summary>
+        public OneContactBase()
+        {
+        }
+
+        /// <summary>
+        /// This is set only when data read from cache
+        /// </summary>
+        [XmlElement(ElementName="IsFromCache", Type=typeof(bool))]
+        public bool IsFromCache = false;
+        #endregion
+
         #region Internal sync identificators
         /// <summary>
         /// Is this class based onOutlook
         /// </summary>
-        internal bool _isFromOutlook;
+        [XmlElement("IsFromOutlook", typeof(bool))]
+        public bool _isFromOutlook;
         /// <summary>
         /// Id from source
         /// </summary>
-        internal string _MyID = "";
+        [XmlElement("MyID",typeof(string))]
+        public string _MyID = "";
         /// <summary>
-        /// Pokud je uvedeno OutlookID, pak je toto odkaz na Oulook _OtlookID/EntityID
+        /// Based _isFromOutlook contains reference do other side _OtlookID/EntityID
         /// </summary>
-        internal string _referenceID = "";
+        [XmlElement("RefernceID", typeof(string))]
+        public string _referenceID = "";
         /// <summary>
-        /// Modifikace v oulooku
+        /// Modifikace in oulooku
         /// </summary>
-        internal DateTime _ModifyDateTime = DateTime.MinValue;
+        [XmlElement("ModifyDateTime", typeof(DateTime))]
+        public DateTime _ModifyDateTime = DateTime.MinValue;
         /// <summary>
-        /// 
+        /// My MD5 hash
         /// </summary>
-        internal string MD5selfCount = "";
+        [XmlIgnore()]
+        public string MD5selfCount = "";
         /// <summary>
         /// MD5 read from contact replica ID
         /// </summary>
-        internal string MD5fromReplica = "";
+        [XmlElement("MD5fromReplica", typeof(string))]
+        public string MD5fromReplica = "";
         /// <summary>
         /// Reference to exist source for update
         /// </summary>
-        internal object _rawSource;
+        [XmlIgnore()]
+        public object _rawSource;
         #endregion
 
         #region Personal data
-        internal string Title = "";
-        internal string FirstName = "";
-        internal string MiddleName = "";
-        internal string LastName = "";
-        internal string Suffix = "";
+        [XmlElement("Title", typeof(string))]
+        public string Title = "";
+        [XmlElement("FirstName", typeof(string))]
+        public string FirstName = "";
+        [XmlElement("MiddleName", typeof(string))]
+        public string MiddleName = "";
+        [XmlElement("LastName", typeof(string))]
+        public string LastName = "";
+        [XmlElement("Suffix", typeof(string))]
+        public string Suffix = "";
 #if (!ANNIVESARY_NOT_WORK)
         DateTime Anniversary = DateTime.MinValue;
 #endif
-        internal DateTime Birthday = DateTime.MinValue;
-        internal string ImagePath = null;
-        internal string ImageHash = "";
-        internal string ImageETag = "";
-        internal string Notes = "";
-        internal string IM = "";
+        [XmlElement("Birthday", typeof(DateTime))]
+        public DateTime Birthday = DateTime.MinValue;
+        [XmlElement("ImagePath", typeof(string))]
+        public string ImagePath = null;
+        [XmlElement("ImageHash", typeof(string))]
+        public string ImageHash = "";
+        [XmlElement("ImageETag", typeof(string))]
+        public string ImageETag = "";
+        [XmlElement("Notes", typeof(string))]
+        public string Notes = "";
+        [XmlElement("IM", typeof(string))]
+        public string IM = "";
         #endregion
 
         #region Telephone
         /// <summary>
         /// List telefonnich cisel
         /// </summary>
-        internal Hashtable Telephone = new Hashtable();
+        [XmlElement("Telephone", typeof(List<OneContactBase.PhoneDetail>))]
+        public List<OneContactBase.PhoneDetail> Telephone = new List<OneContactBase.PhoneDetail>();
         #endregion
 
         #region Address
         /// <summary>
         /// List adres
         /// </summary>
-        internal Hashtable Address = new Hashtable();
+        [XmlElement("Address", typeof(List<OneContactBase.AddressDetail>))]
+        public List<OneContactBase.AddressDetail> Address = new List<OneContactBase.AddressDetail>();
         #endregion
 
         #region Email address
-        internal string email1 = "";
-        internal string email2 = "";
-        internal string email3 = "";
+        [XmlElement("email1", typeof(string))]
+        public string email1 = "";
+        [XmlElement("email2", typeof(string))]
+        public string email2 = "";
+        [XmlElement("email3", typeof(string))]
+        public string email3 = "";
         #endregion
 
         #region Company
-        internal string Company = "";
-        internal string Department = "";
-        internal string JobTitle = "";
+        [XmlElement("Company", typeof(string))]
+        public string Company = "";
+        [XmlElement("Department", typeof(string))]
+        public string Department = "";
+        [XmlElement("JobTitle", typeof(string))]
+        public string JobTitle = "";
         #endregion
 
         #region Ostatni
-        internal string WebServer = "";
-        internal List<string> Category=new List<string>();
+        [XmlElement("WebServer", typeof(string))]
+        public string WebServer = "";
+        [XmlElement("Category", typeof(string))]
+        public List<string> Category = new List<string>();
         #endregion
 
         #region Child class
         /// <summary>
         /// Class for one phone number
         /// </summary>
+        //[XmlRoot()]
         public class PhoneDetail
         {
             #region Phone detail
-            private string _PhoneNumber = "";
-            private Constants.PhoneType _Type = Constants.PhoneType.Mobile;
+            [XmlElement(ElementName = "_PhoneNumber", Type = typeof(string))]
+            public string _PhoneNumber = "";
+            [XmlElement(ElementName = "_Type", Type = typeof(Constants.PhoneType))]
+            public Constants.PhoneType _Type = Constants.PhoneType.Mobile;
 
+            /// <summary>
+            /// Its for serialization
+            /// </summary>
+            public PhoneDetail()
+            {}
             /// <summary>
             /// Create PhoneDetail from number with define type
             /// </summary>
@@ -120,6 +175,7 @@ namespace GoogleContact
             /// <summary>
             /// Return phone number
             /// </summary>
+            [XmlIgnore]
             public string PhoneNumber
             {
                 get { return _PhoneNumber; }
@@ -127,6 +183,7 @@ namespace GoogleContact
             /// <summary>
             /// return typ of number
             /// </summary>
+            [XmlIgnore]
             public Constants.PhoneType Type
             {
                 get { return _Type; }
@@ -134,6 +191,7 @@ namespace GoogleContact
             /// <summary>
             /// Return type in google string
             /// </summary>
+            [XmlIgnore]
             public string GoogleType
             {
                 get
@@ -165,15 +223,23 @@ namespace GoogleContact
         /// <summary>
         /// Trida jedne adresy
         /// </summary>
+        ///[XmlRoot(ElementName = "OneContactBase.AddressDetail", DataType = "GoogleContact.OneContactBase.AddressDetail", IsNullable = false)]
         public class AddressDetail
         {
             #region Address detail
+            [XmlElement(ElementName = "Type", Type = typeof(Constants.AddressType))]
             public Constants.AddressType Type = Constants.AddressType.Business;
+            [XmlElement(ElementName="Street",Type=typeof(string), IsNullable=true)]
             public string Street = "";
+            [XmlElement(ElementName = "POBox", Type = typeof(string), IsNullable = true)]
             public string POBox = "";
+            [XmlElement(ElementName = "City", Type = typeof(string), IsNullable = true)]
             public string City = "";
+            [XmlElement(ElementName = "PostalCode", Type = typeof(string), IsNullable = true)]
             public string PostalCode = "";
+            [XmlElement(ElementName = "CountryRegion", Type = typeof(string), IsNullable = true)]
             public string CountryRegion = "";
+            [XmlElement(ElementName = "State", Type = typeof(string), IsNullable = true)]
             public string State = "";
 
             public AddressDetail()
@@ -193,6 +259,7 @@ namespace GoogleContact
             /// <summary>
             /// Create Google StructuredPostalAddress from self
             /// </summary>
+            [XmlIgnore]
             public StructuredPostalAddress GetPostalAddress
             {
                 get
@@ -234,7 +301,7 @@ namespace GoogleContact
         /// <summary>
         /// Recount self MD5
         /// </summary>
-        internal void MD5ReCountSelf()
+        public void MD5ReCountSelf()
         {
             MD5selfCount = MD5Actual();
         }
@@ -242,7 +309,7 @@ namespace GoogleContact
         /// Count actual MD5
         /// </summary>
         /// <returns></returns>
-        internal string MD5Actual()
+        public string MD5Actual()
         {
 
             return Utils.CountMD5(SummAllData());
@@ -251,7 +318,7 @@ namespace GoogleContact
         /// Return data in oneLongString
         /// </summary>
         /// <returns></returns>
-        internal string SummAllData()
+        public string SummAllData()
         {
             StringBuilder sb = new StringBuilder("");
             sb.Append(Title);
@@ -309,14 +376,14 @@ namespace GoogleContact
         /// </summary>
         /// <param name="source">In Outlook is UserFiled3, in GoogleContact ExtendProperties</param>
         /// <returns></returns>
-        internal string GetSavedReplicaID(string source)
+        public string GetSavedReplicaID(string source)
         {
             string ret = "";
             string md5 = "";
             if (source.StartsWith("[") && source.Contains("]-[") && source.EndsWith("]", StringComparison.InvariantCulture))
             {
-                ret = source.Substring(1, source.IndexOf("]-[",StringComparison.InvariantCulture) - 1);
-                md5 = source.Substring(source.IndexOf("]-[", StringComparison.InvariantCulture) + 3, source.Length - 
+                ret = source.Substring(1, source.IndexOf("]-[", StringComparison.InvariantCulture) - 1);
+                md5 = source.Substring(source.IndexOf("]-[", StringComparison.InvariantCulture) + 3, source.Length -
                     source.IndexOf("]-[", StringComparison.InvariantCulture) - 4);
             }
             MD5fromReplica = md5;
@@ -327,7 +394,7 @@ namespace GoogleContact
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        internal static string DataOrEmpty(string source)
+        public static string DataOrEmpty(string source)
         {
             if (string.IsNullOrEmpty(source))
                 return string.Empty;
@@ -336,7 +403,7 @@ namespace GoogleContact
         /// <summary>
         /// Clear reference for this record when set first time replica
         /// </summary>
-        internal void ClearReference()
+        public void ClearReference()
         {
             if (SettingsProvider.Instance.IsFirstTime)
             {
@@ -383,24 +450,26 @@ namespace GoogleContact
         /// </summary>
         /// <param name="typ"></param>
         /// <returns></returns>
-        private string GetRightPhoneNumber(Constants.PhoneType typ)
+        internal string GetRightPhoneNumber(Constants.PhoneType typ)
         {
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), typ)))
+            foreach(PhoneDetail d in Telephone)
             {
-                return ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), typ)]).PhoneNumber;
+                if (d.Type==typ)
+                return d.PhoneNumber;
             }
-            return "";
+            return string.Empty;
         }
         /// <summary>
         /// Vraci odpovidajici adresu
         /// </summary>
         /// <param name="typ"></param>
         /// <returns></returns>
-        private AddressDetail GetRightAddress(Constants.AddressType typ)
+        internal AddressDetail GetRightAddress(Constants.AddressType typ)
         {
-            if (Address.ContainsKey(Enum.GetName(typeof(Constants.AddressType), typ)))
+            foreach (AddressDetail a in Address)
             {
-                return (AddressDetail)Address[Enum.GetName(typeof(Constants.AddressType), typ)];
+                if (a.Type == typ)
+                    return a;
             }
             return null;
         }
@@ -455,15 +524,15 @@ namespace GoogleContact
             #region Telephone
             Telephone.Clear();
             if (updater.Telephone.Count > 0)
-                foreach (string s in updater.Telephone.Keys)
-                    Telephone.Add(s, (PhoneDetail)updater.Telephone[s]);
+                foreach (PhoneDetail s in updater.Telephone)
+                    Telephone.Add(s);
             #endregion
 
             #region Address
             Address.Clear();
             if (updater.Address.Count > 0)
-                foreach (string s in updater.Address.Keys)
-                    Address.Add(s, (AddressDetail)updater.Address[s]);
+                foreach (AddressDetail s in updater.Address)
+                    Address.Add(s);
             #endregion
 
             #region Email address
@@ -480,6 +549,7 @@ namespace GoogleContact
 
             #region Ostatni
             WebServer = updater.WebServer;
+            IsFromCache = false;
             Category.Clear();
             foreach (string cat in updater.Category)
                 Category.Add(cat);
@@ -516,11 +586,11 @@ namespace GoogleContact
 
             sb.AppendFormat("Email1 / Email2 / Email3: {0} / {1} / {2}\r\n", email1, email2, email3);
             sb.AppendFormat("Telephone.Count: {0}\r\n", Telephone.Count);
-            foreach (PhoneDetail p in Telephone.Values)
+            foreach (PhoneDetail p in Telephone)
                 sb.AppendFormat("\tPhoneNumber / GoogleType / Type: {0} / {1} / {2}\r\n", p.PhoneNumber, p.GoogleType, Enum.GetName(typeof(Constants.PhoneType), p.Type));
 
             sb.AppendFormat("Address.Count: {0}\r\n", Address.Count);
-            foreach (AddressDetail a in Address.Values)
+            foreach (AddressDetail a in Address)
                 sb.AppendFormat("\tStreet / POBox / PostalCode / City / CountryRegion /State / Type: {0} / {1} / {2} / {3} / {4} / {5} / {6}\r\n",
                     a.Street, a.POBox, a.PostalCode, a.City, a.CountryRegion, a.State, Enum.GetName(typeof(Constants.AddressType), a.Type));
 
@@ -528,5 +598,6 @@ namespace GoogleContact
             LoggerProvider.Instance.Logger.Debug(sb.ToString());
         }
         #endregion
+
     }
 }

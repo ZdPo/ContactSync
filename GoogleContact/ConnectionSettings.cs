@@ -96,7 +96,7 @@ namespace GoogleContact
             else if (rbBothSync.Checked)
                 _sp.SynchronizeDirectionSet(Constants.SetupSynchronize.SynchronizeBothSide);
             _sp.LogFile = txDirectory.Text;
-            _sp.LogLevelSet((Constants.LogLevels)Enum.Parse(typeof(Constants.LogLevels),ddLogLevel.SelectedIndex.ToString()));
+            _sp.LogLevelSet((Constants.LogLevel)Enum.Parse(typeof(Constants.LogLevel),ddLogLevel.SelectedIndex.ToString()));
             LoggerProvider.Instance.Logger.Debug("New configuration saved");
             _sp.Save();
             LoggerProvider.Instance.ReloadSettings();
@@ -121,6 +121,12 @@ namespace GoogleContact
                 LoggerProvider.Instance.Logger.Debug("Logger file directory changet to {0}", _sp.LogFile);
             }
             txDirectory.Text = _sp.LogFile;
+        }
+
+        private void btnAdvanced_Click(object sender, EventArgs e)
+        {
+            using (AdvancedConfiguration ac = new AdvancedConfiguration())
+                ac.ShowDialog();
         }
     }
 }

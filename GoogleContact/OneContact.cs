@@ -1,5 +1,5 @@
 ﻿///#define ANNIVESARY_NOT_WORK
-/// Now problem in annivesary - define in project
+/// Now problem in annivesary - define in project property
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,6 +18,7 @@ using Google.GData.Extensions;
 
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
+using System.Xml.Serialization;
 
 namespace GoogleContact
 {
@@ -25,12 +26,19 @@ namespace GoogleContact
 #warning ANNIVESARY_NOT_WORK - system doesn't work with Annivesary. Problem when save to Google.
 #endif
     /// <summary>
-    /// Reprezentuje jeden kontakt
+    /// Class for one contact, based on type of contact.
     /// </summary>
-    class OneContact : OneContactBase
+    //[XmlRoot(ElementName = "OneContact", DataType = "GoogleContact.OneContact", IsNullable = false, Namespace = "http://GoogleContact.OneContactBase")]
+    public class OneContact : OneContactBase
     {
 
         #region Create instance from source
+        /// <summary>
+        /// Only for serializable
+        /// </summary>
+        public OneContact()
+            : base()
+        { }
         /// <summary>
         /// Create from GoogleContac Item
         /// </summary>
@@ -127,52 +135,44 @@ namespace GoogleContact
                     {
                         case ContactsRelationships.IsOther:
                             if (notOther)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Other),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.Other));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.Other));
                             notOther = false;
                             break;
                         case ContactsRelationships.IsWork:
                             if (notBus1)
                             {
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business1),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.Business1));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.Business1));
                                 notBus1 = false;
                             }
                             else if (notBus2)
                             {
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business2),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.Business2));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.Business2));
                                 notBus2 = false;
                             }
                             break;
                         case ContactsRelationships.IsMobile:
                             if (notMobil)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Mobile),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.Mobile));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.Mobile));
                             notMobil = false;
                             break;
                         case ContactsRelationships.IsHome:
                             if (notHome)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Home),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.Home));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.Home));
                             notHome = true;
                             break;
                         case "work_fax":
                             if (notFaxbus)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.FaxWork));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.FaxWork));
                             notFaxbus = true;
                             break;
                         case ContactsRelationships.IsHomeFax:
                             if (notFaxHome)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome),
-                                    new PhoneDetail(pn.Value, Constants.PhoneType.FaxHome));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.FaxHome));
                             notFaxHome = true;
                             break;
                         case ContactsRelationships.IsWorkFax:
                             if (notFaxbus)
-                                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork),
-                                  new PhoneDetail(pn.Value, Constants.PhoneType.FaxWork));
+                                Telephone.Add(new PhoneDetail(pn.Value, Constants.PhoneType.FaxWork));
                             notFaxbus = true;
                             break;
                     }
@@ -192,22 +192,19 @@ namespace GoogleContact
                     {
                         case ContactsRelationships.IsWork:
                             if (notWork)
-                                Address.Add(Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Business),
-                                    new AddressDetail(Constants.AddressType.Business, em.Street, em.Pobox,
+                                Address.Add(new AddressDetail(Constants.AddressType.Business, em.Street, em.Pobox,
                                     em.City, em.Postcode, em.Country, em.Region));
                             notWork = false;
                             break;
                         case ContactsRelationships.IsHome:
                             if (notHome)
-                                Address.Add(Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Home),
-                                    new AddressDetail(Constants.AddressType.Home, em.Street, em.Pobox,
+                                Address.Add(new AddressDetail(Constants.AddressType.Home, em.Street, em.Pobox,
                                     em.City, em.Postcode, em.Country, em.Region));
                             notHome = false;
                             break;
                         case ContactsRelationships.IsOther:
                             if (notOther)
-                                Address.Add(Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Other),
-                                    new AddressDetail(Constants.AddressType.Other, em.Street, em.Pobox,
+                                Address.Add(new AddressDetail(Constants.AddressType.Other, em.Street, em.Pobox,
                                     em.City, em.Postcode, em.Country, em.Region));
                             notOther = false;
                             break;
@@ -267,6 +264,7 @@ namespace GoogleContact
             #endregion
 
             #region Other (web, category)
+            IsFromCache = false;
             if (SourceData.ContactEntry.Websites.Count > 0)
             {
                 foreach (Website en in SourceData.ContactEntry.Websites)
@@ -299,19 +297,6 @@ namespace GoogleContact
 
             MD5ReCountSelf();
             LoggerProvider.Instance.Logger.Debug("Contact from Google: {0} {1} - {2}-{3}", LastName, FirstName, _MyID, _referenceID);
-#if (DUMP_AMEX)
-            if ((LastName == "AMEX") || (FirstName == "AMEX"))
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine(string.Format("Contact from Google: {0}", _MyID));
-                sb.AppendLine(string.Format("User name: {0} {1}", FirstName, LastName));
-                sb.AppendLine(string.Format("MD5 Google: {0} ", MD5selfCount));
-                sb.AppendLine(string.Format("MD5 source:\r\n{0}", SummAllData()));
-                sb.AppendLine(string.Format("Last Update Google:  {0}", UpdateTime));
-                LoggerProvider.Instance.Logger.Debug(sb.ToString());
-            }
-#endif
-
         }
 
         /// <summary>
@@ -362,40 +347,30 @@ namespace GoogleContact
 
             #region Zpracovani telefonu
             if (!string.IsNullOrEmpty(SourceData.MobileTelephoneNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Mobile),
-                    new PhoneDetail(SourceData.MobileTelephoneNumber, Constants.PhoneType.Mobile));
+                Telephone.Add(new PhoneDetail(SourceData.MobileTelephoneNumber, Constants.PhoneType.Mobile));
             if (!string.IsNullOrEmpty(SourceData.BusinessTelephoneNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business1),
-                    new PhoneDetail(SourceData.BusinessTelephoneNumber, Constants.PhoneType.Business1));
+                Telephone.Add(new PhoneDetail(SourceData.BusinessTelephoneNumber, Constants.PhoneType.Business1));
             if (!string.IsNullOrEmpty(SourceData.Business2TelephoneNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business2),
-                    new PhoneDetail(SourceData.Business2TelephoneNumber, Constants.PhoneType.Business2));
+                Telephone.Add(new PhoneDetail(SourceData.Business2TelephoneNumber, Constants.PhoneType.Business2));
             if (!string.IsNullOrEmpty(SourceData.HomeTelephoneNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Home),
-                    new PhoneDetail(SourceData.HomeTelephoneNumber, Constants.PhoneType.Home));
+                Telephone.Add(new PhoneDetail(SourceData.HomeTelephoneNumber, Constants.PhoneType.Home));
             if (!string.IsNullOrEmpty(SourceData.OtherTelephoneNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Other),
-                    new PhoneDetail(SourceData.OtherTelephoneNumber, Constants.PhoneType.Other));
+                Telephone.Add(new PhoneDetail(SourceData.OtherTelephoneNumber, Constants.PhoneType.Other));
             if (!string.IsNullOrEmpty(SourceData.BusinessFaxNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork),
-                    new PhoneDetail(SourceData.BusinessFaxNumber, Constants.PhoneType.FaxWork));
+                Telephone.Add(new PhoneDetail(SourceData.BusinessFaxNumber, Constants.PhoneType.FaxWork));
             if (!string.IsNullOrEmpty(SourceData.HomeFaxNumber))
-                Telephone.Add(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome),
-                    new PhoneDetail(SourceData.HomeFaxNumber, Constants.PhoneType.FaxHome));
+                Telephone.Add(new PhoneDetail(SourceData.HomeFaxNumber, Constants.PhoneType.FaxHome));
             #endregion
 
             #region adresy
             if (!string.IsNullOrEmpty(SourceData.BusinessAddress)) // exituje adresa
-                Address.Add(Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Business),
-                    new AddressDetail(Constants.AddressType.Business, SourceData.BusinessAddressStreet, SourceData.BusinessAddressPostOfficeBox,
+                Address.Add(new AddressDetail(Constants.AddressType.Business, SourceData.BusinessAddressStreet, SourceData.BusinessAddressPostOfficeBox,
                     SourceData.BusinessAddressCity, SourceData.BusinessAddressPostalCode, SourceData.BusinessAddressCountry, SourceData.BusinessAddressState));
             if (!string.IsNullOrEmpty(SourceData.HomeAddress))
-                Address.Add(Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Home),
-                    new AddressDetail(Constants.AddressType.Home, SourceData.HomeAddressStreet, SourceData.HomeAddressPostOfficeBox,
+                Address.Add(new AddressDetail(Constants.AddressType.Home, SourceData.HomeAddressStreet, SourceData.HomeAddressPostOfficeBox,
                     SourceData.HomeAddressCity, SourceData.HomeAddressPostalCode, SourceData.HomeAddressCountry, SourceData.HomeAddressState));
             if (!string.IsNullOrEmpty(SourceData.OtherAddress))
-                Address.Add(Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Other),
-                    new AddressDetail(Constants.AddressType.Other, SourceData.OtherAddressStreet, SourceData.OtherAddressPostOfficeBox,
+                Address.Add(new AddressDetail(Constants.AddressType.Other, SourceData.OtherAddressStreet, SourceData.OtherAddressPostOfficeBox,
                     SourceData.OtherAddressCity, SourceData.OtherAddressPostalCode, SourceData.OtherAddressCountry, SourceData.OtherAddressState));
             #endregion
 
@@ -418,6 +393,7 @@ namespace GoogleContact
             #endregion
 
             #region Other (web, category)
+            IsFromCache = false;
             if (!string.IsNullOrEmpty(SourceData.WebPage))
                 WebServer = SourceData.WebPage;
             Category.Clear();
@@ -446,19 +422,6 @@ namespace GoogleContact
             MD5ReCountSelf();
 
             LoggerProvider.Instance.Logger.Debug("Contact from outlook: {0} {1} - {2}-{3}", LastName, FirstName, _MyID, _referenceID);
-
-#if (DUMP_AMEX)
-            if ((LastName == "AMEX") || (FirstName == "AMEX"))
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine(string.Format("Contact from Outlook: {0}", _MyID));
-                sb.AppendLine(string.Format("User name: {0} {1}", FirstName, LastName));
-                sb.AppendLine(string.Format("MD5 Outlook: {0} ", MD5selfCount));
-                sb.AppendLine(string.Format("MD5 source:\r\n{0}", SummAllData()));
-                sb.AppendLine(string.Format("Last Update Outlook:  {0}", UpdateTime));
-                LoggerProvider.Instance.Logger.Debug(sb.ToString());
-            }
-#endif
         }
         #endregion
 
@@ -629,6 +592,12 @@ namespace GoogleContact
             }
             else
             {
+                /// re-read contact when it read from Cache
+                if (_rawSource == null) // ned reread raw data
+                {
+                    _rawSource = GoogleProvider.GetProvider.GetOneContact(_MyID);
+                }
+
                 _rawSource = SaveToGoogle((Google.Contacts.Contact)_rawSource);
 
                 string OutlookRef = CreateReferenceIDToOther();
@@ -689,7 +658,6 @@ namespace GoogleContact
         /// <returns></returns>
         private Outlook.ContactItem SaveToOutlook(Outlook.ContactItem outContact)
         {
-            string sName = "";
             AddressDetail ad = null;
 
             if (string.IsNullOrEmpty(MD5selfCount))
@@ -725,41 +693,19 @@ namespace GoogleContact
             #endregion
 
             #region Telephone
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Mobile)))
-                outContact.MobileTelephoneNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Mobile)]).PhoneNumber;
-            else
-                outContact.MobileTelephoneNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business1)))
-                outContact.BusinessTelephoneNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business1)]).PhoneNumber;
-            else
-                outContact.BusinessTelephoneNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business2)))
-                outContact.Business2TelephoneNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business2)]).PhoneNumber;
-            else
-                outContact.Business2TelephoneNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Home)))
-                outContact.HomeTelephoneNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Home)]).PhoneNumber;
-            else
-                outContact.HomeTelephoneNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Other)))
-                outContact.OtherTelephoneNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Other)]).PhoneNumber;
-            else
-                outContact.OtherTelephoneNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork)))
-                outContact.BusinessFaxNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork)]).PhoneNumber;
-            else
-                outContact.BusinessFaxNumber = string.Empty;
-            if (Telephone.ContainsKey(Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome)))
-                outContact.HomeFaxNumber = ((PhoneDetail)Telephone[Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome)]).PhoneNumber;
-            else
-                outContact.HomeFaxNumber = string.Empty;
+            outContact.MobileTelephoneNumber = GetRightPhoneNumber(Constants.PhoneType.Mobile);
+            outContact.BusinessTelephoneNumber = GetRightPhoneNumber(Constants.PhoneType.Business1);
+            outContact.Business2TelephoneNumber = GetRightPhoneNumber(Constants.PhoneType.Business2);
+            outContact.HomeTelephoneNumber = GetRightPhoneNumber(Constants.PhoneType.Home);
+            outContact.OtherTelephoneNumber = GetRightPhoneNumber(Constants.PhoneType.Other);
+            outContact.BusinessFaxNumber = GetRightPhoneNumber(Constants.PhoneType.FaxWork);
+            outContact.HomeFaxNumber = GetRightPhoneNumber(Constants.PhoneType.FaxHome);
             #endregion
 
             #region Address
-            sName = Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Business);
-            if (Address.ContainsKey(sName))
+            ad = GetRightAddress(Constants.AddressType.Business);
+            if (ad!=null)
             {
-                ad = (AddressDetail)Address[sName];
                 outContact.BusinessAddressStreet = DataOrEmpty(ad.Street);
                 outContact.BusinessAddressPostOfficeBox = DataOrEmpty(ad.POBox);
                 outContact.BusinessAddressPostalCode = DataOrEmpty(ad.PostalCode);
@@ -777,10 +723,9 @@ namespace GoogleContact
                 outContact.BusinessAddressCountry = string.Empty;
 
             }
-            sName = Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Home);
-            if (Address.ContainsKey(sName))
+            ad = GetRightAddress(Constants.AddressType.Home);
+            if (ad != null)
             {
-                ad = (AddressDetail)Address[sName];
                 outContact.HomeAddressStreet = DataOrEmpty(ad.Street);
                 outContact.HomeAddressPostOfficeBox = DataOrEmpty(ad.POBox);
                 outContact.HomeAddressPostalCode = DataOrEmpty(ad.PostalCode);
@@ -798,10 +743,9 @@ namespace GoogleContact
                 outContact.HomeAddressCountry = string.Empty;
             }
 
-            sName = Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Other);
-            if (Address.ContainsKey(sName))
+            ad = GetRightAddress(Constants.AddressType.Other);
+            if (ad != null)
             {
-                ad = (AddressDetail)Address[sName];
                 outContact.OtherAddressStreet = DataOrEmpty(ad.Street);
                 outContact.OtherAddressPostOfficeBox = DataOrEmpty(ad.POBox);
                 outContact.OtherAddressPostalCode = DataOrEmpty(ad.PostalCode);
@@ -811,15 +755,12 @@ namespace GoogleContact
             }
             else
             {
-                {
-                    outContact.OtherAddressStreet = string.Empty;
-                    outContact.OtherAddressPostOfficeBox = string.Empty;
-                    outContact.OtherAddressPostalCode = string.Empty;
-                    outContact.OtherAddressState = string.Empty;
-                    outContact.OtherAddressCity = string.Empty;
-                    outContact.OtherAddressCountry = string.Empty;
-                }
-
+                outContact.OtherAddressStreet = string.Empty;
+                outContact.OtherAddressPostOfficeBox = string.Empty;
+                outContact.OtherAddressPostalCode = string.Empty;
+                outContact.OtherAddressState = string.Empty;
+                outContact.OtherAddressCity = string.Empty;
+                outContact.OtherAddressCountry = string.Empty;
             }
             #endregion
 
@@ -889,6 +830,12 @@ namespace GoogleContact
         /// <returns></returns>
         private Google.Contacts.Contact SaveToGoogle(Google.Contacts.Contact goContact)
         {
+            /// re-read contact when it read from Cache
+            if (_rawSource == null) // ned reread raw data
+            {
+                _rawSource = GoogleProvider.GetProvider.GetOneContact(_MyID);
+            }
+
             #region Update Image on Google Contact
             ///For start need change it and re-read raw contact
             if (!string.IsNullOrEmpty(ImagePath))
@@ -981,64 +928,64 @@ namespace GoogleContact
             bool isPrimary = false;
 
             goContact.Phonenumbers.Clear();
-            string sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Mobile);
-            if (Telephone.ContainsKey(sName))
+            string phn = GetRightPhoneNumber(Constants.PhoneType.Mobile);
+            if (!string.IsNullOrEmpty(phn))
             {
-                pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
+                pn = new PhoneNumber(phn);
                 pn.Primary = true;
                 isPrimary = true;
                 pn.Rel = ContactsRelationships.IsMobile;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business1);
-            if (Telephone.ContainsKey(sName))
+            phn = GetRightPhoneNumber(Constants.PhoneType.Business1);
+            if (!string.IsNullOrEmpty(phn))
             {
-                pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
+                pn = new PhoneNumber(phn);
                 pn.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 pn.Rel = ContactsRelationships.IsWork;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Business2);
-            if (Telephone.ContainsKey(sName))
+            phn = GetRightPhoneNumber(Constants.PhoneType.Business2);
+            if (!string.IsNullOrEmpty(phn))
             {
-                pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
+                pn = new PhoneNumber(phn);
                 pn.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 pn.Rel = ContactsRelationships.IsWork;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Home);
-            if (Telephone.ContainsKey(sName))
+            phn = GetRightPhoneNumber(Constants.PhoneType.Home);
+            if (!string.IsNullOrEmpty(phn))
             {
-                pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
+                pn = new PhoneNumber(phn);
                 pn.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 pn.Rel = ContactsRelationships.IsHome;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.Other);
-            if (Telephone.ContainsKey(sName))
+            phn = GetRightPhoneNumber(Constants.PhoneType.Other);
+            if (!string.IsNullOrEmpty(phn))
             {
-                pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
+                pn = new PhoneNumber(phn);
                 pn.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 pn.Rel = ContactsRelationships.IsOther;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxWork);
-            if (Telephone.ContainsKey(sName))
+            phn = GetRightPhoneNumber(Constants.PhoneType.FaxWork);
+            if (!string.IsNullOrEmpty(phn))
             {
-                pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
+                pn = new PhoneNumber(phn);
                 pn.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 pn.Rel = ContactsRelationships.IsWorkFax;
                 goContact.Phonenumbers.Add(pn);
             }
-            sName = Enum.GetName(typeof(Constants.PhoneType), Constants.PhoneType.FaxHome);
-            if (Telephone.ContainsKey(sName))
+            phn = GetRightPhoneNumber(Constants.PhoneType.FaxHome);
+            if (!string.IsNullOrEmpty(phn))
             {
-                pn = new PhoneNumber(((PhoneDetail)Telephone[sName]).PhoneNumber);
+                pn = new PhoneNumber(phn);
                 pn.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 pn.Rel = ContactsRelationships.IsHomeFax;
@@ -1047,33 +994,30 @@ namespace GoogleContact
             #endregion
 
             #region Address
-            sName = Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Business);
             StructuredPostalAddress pa = null;
             AddressDetail ad = null;
             isPrimary = false;
             
             goContact.PostalAddresses.Clear();
-            if (Address.ContainsKey(sName))
+            ad = GetRightAddress(Constants.AddressType.Business);
+            if (ad!=null)
             {
-                ad = (AddressDetail)Address[sName];
                 pa = ad.GetPostalAddress;
                 pa.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 goContact.PostalAddresses.Add(pa);
             }
-            sName = Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Home);
-            if (Address.ContainsKey(sName))
+            ad = GetRightAddress(Constants.AddressType.Home);
+            if (ad!=null)
             {
-                ad = (AddressDetail)Address[sName];
                 pa = ad.GetPostalAddress;
                 pa.Primary = isPrimary ? false : true;
                 isPrimary = true;
                 goContact.PostalAddresses.Add(pa);
             }
-            sName = Enum.GetName(typeof(Constants.AddressType), Constants.AddressType.Other);
-            if (Address.ContainsKey(sName))
+            ad = GetRightAddress(Constants.AddressType.Other);
+            if (ad != null)
             {
-                ad = (AddressDetail)Address[sName];
                 pa = ad.GetPostalAddress;
                 pa.Primary = isPrimary ? false : true;
                 isPrimary = true;
@@ -1138,7 +1082,7 @@ namespace GoogleContact
                 goContact.Organizations.Add(org);
             #endregion
 
-            #region Ostatni
+            #region Ostatni (web, category)
             goContact.ContactEntry.Websites.Clear();
             if (!string.IsNullOrEmpty(WebServer))
             {
@@ -1159,7 +1103,7 @@ namespace GoogleContact
                 foreach (string cat in Category)
                 {
                     group=GoogleProvider.GetProvider.GetContactGroupByName(cat);
-                    if (group == null) // takova existuje tak je v seznamu
+                    if (group == null) // This group doesn exist, need create on google
                     {
                         group=GoogleProvider.GetProvider.AddContactGroup(cat);
                     }

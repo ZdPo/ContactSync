@@ -16,7 +16,7 @@ namespace GoogleContact
     {
         private static LoggerProvider _instance;
         private string _LogDirectory = "";
-        private Constants.LogLevels _Level = Constants.LogLevels.Fatal;
+        private Constants.LogLevel _Level = Constants.LogLevel.Fatal;
         private Logger _logger;
         FileTarget fileTarget;
 
@@ -58,24 +58,24 @@ namespace GoogleContact
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        private static LogLevel GetLevel(Constants.LogLevels level)
+        private static LogLevel GetLevel(Constants.LogLevel level)
         {
             LogLevel ret = LogLevel.Fatal;
             switch (level)
             {
-                case Constants.LogLevels.None:
+                case Constants.LogLevel.None:
                     ret = LogLevel.Off;
                     break;
-                case Constants.LogLevels.Fatal:
+                case Constants.LogLevel.Fatal:
                     ret = LogLevel.Fatal;
                     break;
-                case Constants.LogLevels.Error:
+                case Constants.LogLevel.Error:
                     ret = LogLevel.Error;
                     break;
-                case Constants.LogLevels.Warning:
+                case Constants.LogLevel.Warning:
                     ret = LogLevel.Warn;
                     break;
-                case Constants.LogLevels.Debug:
+                case Constants.LogLevel.Debug:
                     ret = LogLevel.Debug;
                     break;
                 default:

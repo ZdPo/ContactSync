@@ -10,7 +10,10 @@ using Microsoft.Office.Tools;
 
 namespace GoogleContact
 {
-    
+
+    /// <summary>
+    /// Provder, it's uses as singletone class for connection Outlook data
+    /// </summary>
     class OutlookProvider
     {
         #region start data
@@ -74,6 +77,37 @@ namespace GoogleContact
         {
             return _ContactFolder.Items;
         }
+        #endregion
+
+        #region Work with Contact folder read all possible contact 
+        /// <summary>
+        /// Read all possible contact and return it
+        /// </summary>
+        /// <param name="cacheTimeStamp">For future using</param>
+        /// <returns>Distionry where key is EntryID and Value is Last Modification Time</returns>
+        public Dictionary<string,DateTime> GetTableFilter(DateTime cacheTimeStamp)
+        {
+            //string criteria = string.Format("[LastModificationTime] > '{0}'", cacheTimeStamp.ToString("yyyyMMdd HH:mm:ss"));
+            Outlook.Table table = _ContactFolder.GetTable(Type.Missing, Type.Missing);
+            Dictionary<string, DateTime> ret = new Dictionary<string, DateTime>();
+
+            while (!table.EndOfTable)
+            {
+                Outlook.Row nextRow = table.GetNextRow();
+                ret.Add(nextRow["EntryID"].ToString(), (DateTime)nextRow["LastModificationTime"]);
+            }
+            return ret;
+        }
+        /// <summary>
+        /// Use EntryID for get their objct refernce
+        /// </summary>
+        /// <param name="EntryID"></param>
+        /// <returns></returns>
+        public object FindItemfromID(string EntryID)
+        {
+            return _NameSpace.GetItemFromID(EntryID);
+        }
+
         #endregion
 
         #region Work with category

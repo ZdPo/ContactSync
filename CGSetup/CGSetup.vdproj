@@ -28,19 +28,13 @@
         "Entry"
         {
         "MsmKey" = "8:_08B95E9CBAF39C8163B6C8EA33CBF191"
-        "OwnerKey" = "8:_D6759A7A2A5B6912CB304FB0EA9EEDBD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_08B95E9CBAF39C8163B6C8EA33CBF191"
         "OwnerKey" = "8:_AFFEF5E80B35D45CC39E1745D1168457"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_08B95E9CBAF39C8163B6C8EA33CBF191"
-        "OwnerKey" = "8:_DFBED7CB253492CA967F41F032B3FF55"
+        "OwnerKey" = "8:_D6759A7A2A5B6912CB304FB0EA9EEDBD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -58,13 +52,13 @@
         "Entry"
         {
         "MsmKey" = "8:_240FED88FD054AC7557DAF16512A470E"
-        "OwnerKey" = "8:_626EE2D0B23574A560B558C2B4459252"
+        "OwnerKey" = "8:_E675DB26120EAA5524415E828E44123D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_240FED88FD054AC7557DAF16512A470E"
-        "OwnerKey" = "8:_E675DB26120EAA5524415E828E44123D"
+        "OwnerKey" = "8:_626EE2D0B23574A560B558C2B4459252"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -83,18 +77,6 @@
         {
         "MsmKey" = "8:_240FED88FD054AC7557DAF16512A470E"
         "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_26C3896FEF1A568443764C60E680F062"
-        "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_26C3896FEF1A568443764C60E680F062"
-        "OwnerKey" = "8:_F2EBBB607D1CEB349F1B9398984FE341"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -141,6 +123,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_660ED2AC326240FBAA2AD85E8C20E99E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_83C40F5860C4678116A4EF4CD6E85C24"
         "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
         "MsmSig" = "8:_UNDEFINED"
@@ -159,6 +147,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A1C93F2DB7714DCF976114DE3D873A7B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_AB1F72AC587D2B8B5E797CFFE5AD7EDD"
         "OwnerKey" = "8:_4262E308CE8E001465B9ABE35A4E27E6"
         "MsmSig" = "8:_UNDEFINED"
@@ -172,13 +166,19 @@
         "Entry"
         {
         "MsmKey" = "8:_AFFEF5E80B35D45CC39E1745D1168457"
-        "OwnerKey" = "8:_DFBED7CB253492CA967F41F032B3FF55"
+        "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_AFFEF5E80B35D45CC39E1745D1168457"
-        "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
+        "MsmKey" = "8:_B6B360A817C14DD4914E5CEFA8E88859"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BF84B7FA07D449E79633D34EF29529A9"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -201,7 +201,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DFBED7CB253492CA967F41F032B3FF55"
+        "MsmKey" = "8:_E675DB26120EAA5524415E828E44123D"
         "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -209,12 +209,6 @@
         {
         "MsmKey" = "8:_E675DB26120EAA5524415E828E44123D"
         "OwnerKey" = "8:_F2EBBB607D1CEB349F1B9398984FE341"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E675DB26120EAA5524415E828E44123D"
-        "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -227,36 +221,30 @@
         {
         "MsmKey" = "8:_F2EBBB607D1CEB349F1B9398984FE341"
         "OwnerKey" = "8:_626EE2D0B23574A560B558C2B4459252"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_83C40F5860C4678116A4EF4CD6E85C24"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_626EE2D0B23574A560B558C2B4459252"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F2EBBB607D1CEB349F1B9398984FE341"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_E675DB26120EAA5524415E828E44123D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_626EE2D0B23574A560B558C2B4459252"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_F2EBBB607D1CEB349F1B9398984FE341"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -286,25 +274,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D6759A7A2A5B6912CB304FB0EA9EEDBD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DFBED7CB253492CA967F41F032B3FF55"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_AFFEF5E80B35D45CC39E1745D1168457"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_26C3896FEF1A568443764C60E680F062"
+        "OwnerKey" = "8:_D6759A7A2A5B6912CB304FB0EA9EEDBD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -323,6 +299,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_AB1F72AC587D2B8B5E797CFFE5AD7EDD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_83C40F5860C4678116A4EF4CD6E85C24"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -385,6 +367,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -490,37 +493,6 @@
                     }
                 }
             "SourcePath" = "8:Microsoft.VisualStudio.Tools.Applications.Runtime.v9.0.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_26C3896FEF1A568443764C60E680F062"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Microsoft.Office.Interop.SmartTag, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"
-                "ScatterAssemblies"
-                {
-                    "_26C3896FEF1A568443764C60E680F062"
-                    {
-                    "Name" = "8:Microsoft.Office.Interop.SmartTag.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Microsoft.Office.Interop.SmartTag.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
@@ -662,6 +634,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_660ED2AC326240FBAA2AD85E8C20E99E"
+            {
+            "SourcePath" = "8:..\\GoogleContact\\bin\\Release\\GoogleContact.vsto"
+            "TargetName" = "8:GoogleContact.vsto"
+            "Tag" = "8:"
+            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_83C40F5860C4678116A4EF4CD6E85C24"
             {
             "AssemblyRegister" = "3:1"
@@ -691,6 +683,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A1C93F2DB7714DCF976114DE3D873A7B"
+            {
+            "SourcePath" = "8:..\\GoogleContact\\bin\\Release\\GoogleContact.dll.manifest"
+            "TargetName" = "8:GoogleContact.dll.manifest"
+            "Tag" = "8:"
+            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AB1F72AC587D2B8B5E797CFFE5AD7EDD"
@@ -755,6 +767,46 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B6B360A817C14DD4914E5CEFA8E88859"
+            {
+            "SourcePath" = "8:..\\GoogleContact\\bin\\Release\\Properties\\Settings.Designer.cs"
+            "TargetName" = "8:Settings.Designer.cs"
+            "Tag" = "8:"
+            "Folder" = "8:_8BCB0467A5044D49AD343AAC4758C2C2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BF84B7FA07D449E79633D34EF29529A9"
+            {
+            "SourcePath" = "8:..\\GoogleContact\\bin\\Release\\Properties\\Settings.settings"
+            "TargetName" = "8:Settings.settings"
+            "Tag" = "8:"
+            "Folder" = "8:_8BCB0467A5044D49AD343AAC4758C2C2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D6759A7A2A5B6912CB304FB0EA9EEDBD"
             {
             "AssemblyRegister" = "3:1"
@@ -769,37 +821,6 @@
                     }
                 }
             "SourcePath" = "8:Microsoft.Vbe.Interop.Forms.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DFBED7CB253492CA967F41F032B3FF55"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Microsoft.Office.Interop.Outlook, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_DFBED7CB253492CA967F41F032B3FF55"
-                    {
-                    "Name" = "8:Microsoft.Office.Interop.Outlook.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Microsoft.Office.Interop.Outlook.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
@@ -895,6 +916,17 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_8BCB0467A5044D49AD343AAC4758C2C2"
+                    {
+                    "Name" = "8:Properties"
+                    "AlwaysCreate" = "11:TRUE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_CF5CC7F1B5D74EFB80C201776B640371"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_73FE925C67434A22A4C9C9EABC379CE8"
@@ -936,7 +968,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Google Contact Synchronizer"
         "ProductCode" = "8:{F9D6A375-DCCA-45A0-A698-B4AF458CEF4D}"
-        "PackageCode" = "8:{982074CE-921B-4006-AAB8-EFE740CA1A3D}"
+        "PackageCode" = "8:{99A0962C-95F1-43C4-B605-FE95E43F23C7}"
         "UpgradeCode" = "8:{B134FA0A-5EE0-40B5-9DBD-4D07637F1763}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -972,7 +1004,7 @@
                     {
                     "Name" = "8:Software"
                     "Condition" = "8:"
-                    "AlwaysCreate" = "11:FALSE"
+                    "AlwaysCreate" = "11:TRUE"
                     "DeleteAtUninstall" = "11:FALSE"
                     "Transitive" = "11:FALSE"
                         "Keys"
@@ -981,7 +1013,7 @@
                             {
                             "Name" = "8:Microsoft"
                             "Condition" = "8:"
-                            "AlwaysCreate" = "11:FALSE"
+                            "AlwaysCreate" = "11:TRUE"
                             "DeleteAtUninstall" = "11:FALSE"
                             "Transitive" = "11:FALSE"
                                 "Keys"
@@ -990,7 +1022,7 @@
                                     {
                                     "Name" = "8:Office"
                                     "Condition" = "8:"
-                                    "AlwaysCreate" = "11:FALSE"
+                                    "AlwaysCreate" = "11:TRUE"
                                     "DeleteAtUninstall" = "11:FALSE"
                                     "Transitive" = "11:FALSE"
                                         "Keys"
@@ -999,7 +1031,7 @@
                                             {
                                             "Name" = "8:Outlook"
                                             "Condition" = "8:"
-                                            "AlwaysCreate" = "11:FALSE"
+                                            "AlwaysCreate" = "11:TRUE"
                                             "DeleteAtUninstall" = "11:FALSE"
                                             "Transitive" = "11:FALSE"
                                                 "Keys"
@@ -1008,7 +1040,7 @@
                                                     {
                                                     "Name" = "8:Addins"
                                                     "Condition" = "8:"
-                                                    "AlwaysCreate" = "11:FALSE"
+                                                    "AlwaysCreate" = "11:TRUE"
                                                     "DeleteAtUninstall" = "11:FALSE"
                                                     "Transitive" = "11:FALSE"
                                                         "Keys"
@@ -1017,14 +1049,30 @@
                                                             {
                                                             "Name" = "8:Google Contact Synchronizer"
                                                             "Condition" = "8:"
-                                                            "AlwaysCreate" = "11:FALSE"
-                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                            "AlwaysCreate" = "11:TRUE"
+                                                            "DeleteAtUninstall" = "11:TRUE"
                                                             "Transitive" = "11:FALSE"
                                                                 "Keys"
                                                                 {
                                                                 }
                                                                 "Values"
                                                                 {
+                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_355CF4C6720D442589F4B18679B3BDE0"
+                                                                    {
+                                                                    "Name" = "8:Manifest"
+                                                                    "Condition" = "8:%PROCESSOR_ARCHITECTURE ~= \"AMD64\""
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:1"
+                                                                    "Value" = "8:C:\\Program Files (x86)\\Pok.Zde\\Google Contact Synchronizer\\GoogleContact.vsto|vstolocal"
+                                                                    }
+                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_8538ECD907E045919058C60F69F02730"
+                                                                    {
+                                                                    "Name" = "8:Manifest"
+                                                                    "Condition" = "8:%PROCESSOR_ARCHITECTURE ~= \"x86\""
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:1"
+                                                                    "Value" = "8:C:\\Program Files\\Pok.Zde\\Google Contact Synchronizer\\GoogleContact.vsto|vstolocal"
+                                                                    }
                                                                     "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_A3DC983BDEC54ED58940D56CE0BC31B2"
                                                                     {
                                                                     "Name" = "8:Description"
@@ -1549,9 +1597,93 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_593BE44660124B9AABC729C64FE17317"
+            {
+            "SourcePath" = "8:"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:ContentFiles"
+            "OutputProjectGuid" = "8:{58C0A27E-E20D-4810-B521-D73F2219259D}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_71D73078F6D945AD94341A1600AA3C5E"
+            {
+            "SourcePath" = "8:"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:XmlSerializer"
+            "OutputProjectGuid" = "8:{58C0A27E-E20D-4810-B521-D73F2219259D}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7A8CEF964D624D01B12C461353718FD6"
+            {
+            "SourcePath" = "8:"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:LocalizedResourceDlls"
+            "OutputProjectGuid" = "8:{58C0A27E-E20D-4810-B521-D73F2219259D}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C2E075F121A4463DA405FD91A1B06CB1"
             {
-            "SourcePath" = "8:..\\GoogleContact\\obj\\Debug\\GoogleContact.dll"
+            "SourcePath" = "8:..\\GoogleContact\\obj\\Release\\GoogleContact.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"

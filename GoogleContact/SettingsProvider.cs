@@ -103,6 +103,34 @@ namespace GoogleContact
             }
         }
         /// <summary>
+        /// Use local cache for google contact, it's for speedUp read when huge volume of contacts
+        /// </summary>
+        public bool IsUseGoogleCache
+        {
+            get { return Properties.Settings.Default.UseGoogleCache; }
+            set
+            {
+                Properties.Settings.Default.UseGoogleCache = value;
+                if (!value)
+                    Utils.RemoveCacheFile(false);
+                _isSaved = false;
+            }
+        }
+        /// <summary>
+        /// Use local cache for Outlook contact, it's for speedUp read when huge volume of contacts
+        /// </summary>
+        public bool IsUseOutlookCache
+        {
+            get { return Properties.Settings.Default.UseOulookCache; }
+            set
+            {
+                Properties.Settings.Default.UseOulookCache = value;
+                if (!value)
+                    Utils.RemoveCacheFile(true); 
+                _isSaved = false;
+            }
+        }
+        /// <summary>
         /// Is first Time synchronization
         /// </summary>
         public bool IsFirstTime
@@ -334,12 +362,12 @@ namespace GoogleContact
         /// Get current Log level
         /// </summary>
         /// <returns></returns>
-        public static Constants.LogLevels LogLevelGet()
+        public static Constants.LogLevel LogLevelGet()
         {
-            Constants.LogLevels en = Constants.LogLevels.Fatal;
+            Constants.LogLevel en = Constants.LogLevel.Fatal;
             try
             {
-                en = (Constants.LogLevels)Enum.Parse(typeof(Constants.LogLevels), Properties.Settings.Default.LogLevel.ToString());
+                en = (Constants.LogLevel)Enum.Parse(typeof(Constants.LogLevel), Properties.Settings.Default.LogLevel.ToString());
             }
             catch (ArgumentNullException e)
             {
@@ -362,7 +390,7 @@ namespace GoogleContact
         /// Save new loglevel value
         /// </summary>
         /// <param name="setValue"></param>
-        public void LogLevelSet(Constants.LogLevels setValue)
+        public void LogLevelSet(Constants.LogLevel setValue)
         {
             int v = Convert.ToInt32(setValue);
             Properties.Settings.Default.LogLevel = v;

@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConnectionSettings));
             this.label1 = new System.Windows.Forms.Label();
             this.gUserName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -37,6 +36,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rbBoth = new System.Windows.Forms.RadioButton();
             this.rbGo2Ou = new System.Windows.Forms.RadioButton();
             this.rbOu2Go = new System.Windows.Forms.RadioButton();
             this.chFirstSync = new System.Windows.Forms.CheckBox();
@@ -44,14 +44,14 @@
             this.rbBothSync = new System.Windows.Forms.RadioButton();
             this.rbGo2OuSync = new System.Windows.Forms.RadioButton();
             this.rbOut2GoSync = new System.Windows.Forms.RadioButton();
-            this.rbBoth = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.txDirectory = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.btnSelectDirectory = new System.Windows.Forms.Button();
-            this.ddLogLevel = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.ddLogLevel = new System.Windows.Forms.ComboBox();
+            this.btnSelectDirectory = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txDirectory = new System.Windows.Forms.TextBox();
             this.fbSelectLogDirectory = new System.Windows.Forms.FolderBrowserDialog();
+            this.btnAdvanced = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -113,7 +113,7 @@
             // button2
             // 
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button2.Location = new System.Drawing.Point(329, 283);
+            this.button2.Location = new System.Drawing.Point(93, 283);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 7;
@@ -133,6 +133,17 @@
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "First synchronize";
+            // 
+            // rbBoth
+            // 
+            this.rbBoth.AutoSize = true;
+            this.rbBoth.Enabled = false;
+            this.rbBoth.Location = new System.Drawing.Point(7, 90);
+            this.rbBoth.Name = "rbBoth";
+            this.rbBoth.Size = new System.Drawing.Size(69, 17);
+            this.rbBoth.TabIndex = 3;
+            this.rbBoth.Text = "Both side";
+            this.rbBoth.UseVisualStyleBackColor = true;
             // 
             // rbGo2Ou
             // 
@@ -205,22 +216,11 @@
             this.rbOut2GoSync.AutoSize = true;
             this.rbOut2GoSync.Location = new System.Drawing.Point(7, 20);
             this.rbOut2GoSync.Name = "rbOut2GoSync";
-            this.rbOut2GoSync.Size = new System.Drawing.Size(132, 17);
+            this.rbOut2GoSync.Size = new System.Drawing.Size(135, 17);
             this.rbOut2GoSync.TabIndex = 0;
             this.rbOut2GoSync.TabStop = true;
-            this.rbOut2GoSync.Text = "Only Oulook to Google";
+            this.rbOut2GoSync.Text = "Only Outlook to Google";
             this.rbOut2GoSync.UseVisualStyleBackColor = true;
-            // 
-            // rbBoth
-            // 
-            this.rbBoth.AutoSize = true;
-            this.rbBoth.Enabled = false;
-            this.rbBoth.Location = new System.Drawing.Point(7, 90);
-            this.rbBoth.Name = "rbBoth";
-            this.rbBoth.Size = new System.Drawing.Size(69, 17);
-            this.rbBoth.TabIndex = 3;
-            this.rbBoth.Text = "Both side";
-            this.rbBoth.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
@@ -236,32 +236,14 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Logging";
             // 
-            // txDirectory
+            // label4
             // 
-            this.txDirectory.Location = new System.Drawing.Point(100, 16);
-            this.txDirectory.Name = "txDirectory";
-            this.txDirectory.ReadOnly = true;
-            this.txDirectory.Size = new System.Drawing.Size(205, 20);
-            this.txDirectory.TabIndex = 0;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 19);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(88, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Logging directory";
-            // 
-            // btnSelectDirectory
-            // 
-            this.btnSelectDirectory.Location = new System.Drawing.Point(311, 14);
-            this.btnSelectDirectory.Name = "btnSelectDirectory";
-            this.btnSelectDirectory.Size = new System.Drawing.Size(75, 23);
-            this.btnSelectDirectory.TabIndex = 2;
-            this.btnSelectDirectory.Text = "...";
-            this.btnSelectDirectory.UseVisualStyleBackColor = true;
-            this.btnSelectDirectory.Click += new System.EventHandler(this.btnSelectDirectory_Click);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 45);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(50, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Log level";
             // 
             // ddLogLevel
             // 
@@ -277,18 +259,46 @@
             this.ddLogLevel.Size = new System.Drawing.Size(205, 21);
             this.ddLogLevel.TabIndex = 3;
             // 
-            // label4
+            // btnSelectDirectory
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 45);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(50, 13);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Log level";
+            this.btnSelectDirectory.Location = new System.Drawing.Point(311, 14);
+            this.btnSelectDirectory.Name = "btnSelectDirectory";
+            this.btnSelectDirectory.Size = new System.Drawing.Size(75, 23);
+            this.btnSelectDirectory.TabIndex = 2;
+            this.btnSelectDirectory.Text = "...";
+            this.btnSelectDirectory.UseVisualStyleBackColor = true;
+            this.btnSelectDirectory.Click += new System.EventHandler(this.btnSelectDirectory_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(4, 19);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(88, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Logging directory";
+            // 
+            // txDirectory
+            // 
+            this.txDirectory.Location = new System.Drawing.Point(100, 16);
+            this.txDirectory.Name = "txDirectory";
+            this.txDirectory.ReadOnly = true;
+            this.txDirectory.Size = new System.Drawing.Size(205, 20);
+            this.txDirectory.TabIndex = 0;
             // 
             // fbSelectLogDirectory
             // 
             this.fbSelectLogDirectory.Description = "Select directory for log files";
+            // 
+            // btnAdvanced
+            // 
+            this.btnAdvanced.Location = new System.Drawing.Point(272, 282);
+            this.btnAdvanced.Name = "btnAdvanced";
+            this.btnAdvanced.Size = new System.Drawing.Size(131, 23);
+            this.btnAdvanced.TabIndex = 11;
+            this.btnAdvanced.Text = "Advanced settings ...";
+            this.btnAdvanced.UseVisualStyleBackColor = true;
+            this.btnAdvanced.Click += new System.EventHandler(this.btnAdvanced_Click);
             // 
             // ConnectionSettings
             // 
@@ -296,7 +306,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button2;
-            this.ClientSize = new System.Drawing.Size(418, 316);
+            this.ClientSize = new System.Drawing.Size(428, 326);
+            this.Controls.Add(this.btnAdvanced);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -307,9 +318,11 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.gUserName);
             this.Controls.Add(this.label1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(434, 354);
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(434, 354);
             this.Name = "ConnectionSettings";
             this.ShowInTaskbar = false;
             this.Text = "Google Connection Settings";
@@ -350,5 +363,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txDirectory;
         private System.Windows.Forms.FolderBrowserDialog fbSelectLogDirectory;
+        private System.Windows.Forms.Button btnAdvanced;
     }
 }

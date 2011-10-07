@@ -21,9 +21,9 @@ using Office = Microsoft.Office.Core;
 using Microsoft.Office.Tools;
 
 namespace GoogleContact 
-{    
+{
     /// <summary>
-    /// realize synchronize between O & G
+    /// Realize synchronize between O &amp; G
     /// </summary>
     class Synchronizer : System.IDisposable
     {
@@ -33,8 +33,10 @@ namespace GoogleContact
         private SyncInfo syncinfo;
         private const int MaxSteps = Constants.MaxSyncStep;
         private Hashtable ouContacts;
+        private DateTime ouCacheTime = DateTime.MinValue;
         private int _ouMaxContacts;
         private Hashtable goContacts;
+        private DateTime goCacheTime = DateTime.MinValue;
         private int _goMaxContacts;
         private int _ActualStep;
         private LastStatistic _lastStatistic;
@@ -141,10 +143,6 @@ namespace GoogleContact
             UpdateSyncInfo();
             Step2ReadGoogle();
             syncinfo.ActualNextStep();
-#if (DUMP_CONTACTS)
-            DumpContactToLog(ref ouContacts);
-            DumpContactToLog(ref goContacts);
-#endif
             #endregion
 
             #region Insert data to other side
@@ -226,6 +224,14 @@ namespace GoogleContact
             #endregion
             
             LoggerProvider.Instance.Logger.Debug("Synchronize ends");
+
+            #region Write to cache
+            if (SettingsProvider.Instance.IsUseGoogleCache)
+                Utils.WriteGoogleToCache(goContacts);
+            if (SettingsProvider.Instance.IsUseOutlookCache)
+                Utils.WriteOutlookToCache(ouContacts);
+            #endregion
+
         }
         #endregion
 
@@ -237,39 +243,131 @@ namespace GoogleContact
         /// </summary>
         private void Step1ReadOutlook()
         {
-            LoggerProvider.Instance.Logger.Debug("Read data from Outlook");
-            Outlook.Items it = op.OutlookItems();
-            _ouMaxContacts = op.CountContact();
-            syncinfo.OutlookContacts = _ouMaxContacts;
-            syncinfo.WorkOnMax = _ouMaxContacts;
-            Outlook.ContactItem oci = null;
-            OneContact oc = null;
-            object works = null;
-            int i = 0;
-            int read = 0;
-
-            syncinfo.WorkOnNextStep();
-            for (; i < _ouMaxContacts; i++)
+            bool IsNeedReadAllData = true;
+            bool IsNeedReadNewData = false;
+            List<string> toread = new List<string>(); /// list EntryID for reading
+            List<string> todelete = new List<string>(); /// list EntryID for delete
+            if (SettingsProvider.Instance.IsUseOutlookCache)
             {
-                syncinfo.WorkOn = i + 1;
-                syncinfo.WorkOnNextStep();
-                if (i == 0)
-                    works = it.GetFirst();
+                LoggerProvider.Instance.Logger.Debug("Read data from cache for Outlook");
+                ouCacheTime = Utils.LoadCacheDate(true);
+                ouContacts = Utils.ReadOutlookFromCache(ref ouCacheTime);
+                if ((ouCacheTime > DateTime.MinValue) && (ouCacheTime < DateTime.Now) && (ouContacts.Count > 0)) // Data read from cache is good
+                {
+                    //_lastStatistic.ouReadContacts = ouContacts.Count;
+                    Dictionary<string, DateTime> ouall = OutlookProvider.Instance.GetTableFilter(ouCacheTime);
+                    DateTime ouDate;
+
+                    foreach (string s in ouContacts.Keys)
+                        todelete.Add(s);
+
+                    foreach (string EntID in ouall.Keys)
+                    {
+                        ouDate = ouall[EntID];
+                        if (ouContacts.ContainsKey(EntID)) /// is EntID found in current cached data
+                        {
+                            todelete.Remove(EntID);
+                            if (((OneContact)ouContacts[EntID])._ModifyDateTime < ouDate) //date from curent select is 
+                            {
+                                ouContacts.Remove(EntID);
+                                toread.Add(EntID);
+                            }
+                        }
+                        else
+                            toread.Add(EntID);
+                    }
+                    /// in toread now only new EntryID
+                    /// in todelete now only contact deleted in outlook, this need clear from cache, because in last two steps it delete from google to
+                    foreach (string s in todelete)
+                        ouContacts.Remove(s);
+                    IsNeedReadNewData = toread.Count > 0;
+                }
                 else
-                    works = it.GetNext();
-                if (works is Outlook.DistListItem)
-                    continue;
-                oci = works as Outlook.ContactItem;
-                if (works==null)
-                    continue;
-                oc = new OneContact(oci);
-                if (SettingsProvider.Instance.IsFirstTime)
-                    oc.ClearReference();
-                ouContacts.Add(oci.EntryID, oc);
-                read++;
+                    LoggerProvider.Instance.Logger.Debug("Data from Outlook cache isn't valid");
             }
-            _lastStatistic.ouReadContacts += read;
-            syncinfo.OutlookContacts = ouContacts.Count;
+            if (IsNeedReadNewData) // need read new contact data to cache
+            {
+                LoggerProvider.Instance.Logger.Debug("Read only new data from Outlook");
+                Outlook.Items it = op.OutlookItems();
+                //_ouMaxContacts = op.CountContact();
+                syncinfo.OutlookContacts = toread.Count;
+                syncinfo.WorkOnMax = toread.Count;
+                Outlook.ContactItem oci = null;
+                OneContact oc = null;
+                object works = null;
+                int i = 0;
+                int read = 0;
+
+                syncinfo.WorkOnNextStep();
+                for (; i < toread.Count; i++)
+                {
+                    syncinfo.WorkOn = i + 1;
+                    syncinfo.WorkOnNextStep();
+                    
+                    works = OutlookProvider.Instance.FindItemfromID(toread[i]);
+
+                    //if (i == 0)
+                    //    works = it.GetFirst();
+                    //else
+                    //    works = it.GetNext();
+                    if (works is Outlook.DistListItem)
+                        continue;
+                    oci = works as Outlook.ContactItem;
+                    if (works == null)
+                        continue;
+                    if (toread.Contains(oci.EntryID))
+                    {
+                        oc = new OneContact(oci);
+                        if (SettingsProvider.Instance.IsFirstTime)
+                            oc.ClearReference();
+                        ouContacts.Add(oci.EntryID, oc);
+                    }
+                    read++;
+                }
+                _lastStatistic.ouReadContacts += read;
+                syncinfo.OutlookContacts = ouContacts.Count;
+                IsNeedReadAllData = false;
+            }
+            if (IsNeedReadAllData)
+            {
+                /// because need read all data. Before this need remove all cached data
+                ouContacts.Clear();
+                /// start read all data
+                ouCacheTime=DateTime.MinValue;
+                LoggerProvider.Instance.Logger.Debug("Read all data from Outlook");
+                Outlook.Items it = op.OutlookItems();
+                _ouMaxContacts = op.CountContact();
+                syncinfo.OutlookContacts = _ouMaxContacts;
+                syncinfo.WorkOnMax = _ouMaxContacts;
+                Outlook.ContactItem oci = null;
+                OneContact oc = null;
+                object works = null;
+                int i = 0;
+                int read = 0;
+
+                syncinfo.WorkOnNextStep();
+                for (; i < _ouMaxContacts; i++)
+                {
+                    syncinfo.WorkOn = i + 1;
+                    syncinfo.WorkOnNextStep();
+                    if (i == 0)
+                        works = it.GetFirst();
+                    else
+                        works = it.GetNext();
+                    if (works is Outlook.DistListItem)
+                        continue;
+                    oci = works as Outlook.ContactItem;
+                    if (works == null)
+                        continue;
+                    oc = new OneContact(oci);
+                    if (SettingsProvider.Instance.IsFirstTime)
+                        oc.ClearReference();
+                    ouContacts.Add(oci.EntryID, oc);
+                    read++;
+                }
+                _lastStatistic.ouReadContacts += read;
+                syncinfo.OutlookContacts = ouContacts.Count;
+            }
         }
 
         /// <summary>
@@ -277,25 +375,78 @@ namespace GoogleContact
         /// </summary>
         private void Step2ReadGoogle()
         {
-            LoggerProvider.Instance.Logger.Debug("Read all data from Gmail");
-            OneContact oc = null;
-            gp.ClearContactItems(); // need refresh before start next read, because ContactItems are cached in program
-            _goMaxContacts = gp.CountContact();
-            syncinfo.GoogleContacts = _goMaxContacts;
-            syncinfo.WorkOnMax = _goMaxContacts;
-            int i = 0;
-            syncinfo.WorkOnNextStep();
-            foreach (Google.Contacts.Contact gc in gp.ContactItems.Entries)
+            bool IsReadAllContact = true; // use for reread all contact, When time diferences biggers that 20 days
+            List<string> toread = new List<string>(); /// list EntryID for reading
+            List<string> todelete = new List<string>(); /// list EntryID for delete
+            if (SettingsProvider.Instance.IsUseGoogleCache) // use cache system for Google contact
             {
-                syncinfo.WorkOn=++i;
-                syncinfo.WorkOnNextStep();
-                oc = new OneContact(gc);
-                if (SettingsProvider.Instance.IsFirstTime)
-                    oc.ClearReference();
-                goContacts.Add(gc.Id, oc);
+
+
+                LoggerProvider.Instance.Logger.Debug("Read data from cache for Google");
+                goCacheTime = Utils.LoadCacheDate(true);
+                goContacts = Utils.ReadGoogleFromCache(ref goCacheTime);
+                if ((goCacheTime > DateTime.MinValue) && (goCacheTime < DateTime.Now) && DateTime.Now.AddDays(-20) < goCacheTime) // Data read from cache is good
+                {
+                    _lastStatistic.goReadContacts = goContacts.Count;
+                    Feed<Google.Contacts.Contact> gochanged = gp.ContactItemsChangedAfter(goCacheTime);
+                    IsReadAllContact = false; // data read
+                    if ((gochanged != null) && (gochanged.TotalResults > 0))// return data it's good
+                    {
+                        OneContact oc = null;
+                        foreach (Google.Contacts.Contact gc in gochanged.Entries)
+                        {
+                            if (goContacts.ContainsKey(gc.Id))
+                            {
+                                if (gc.Deleted) /// it's deleted?
+                                {
+                                    goContacts.Remove(gc.Id);
+                                    _lastStatistic.goReadContacts--;
+                                    continue;
+                                }
+                                if (gc.Updated > ((OneContact)goContacts[gc.Id])._ModifyDateTime)
+                                {
+                                    goContacts.Remove(gc.Id);
+                                    _lastStatistic.goReadContacts--;
+                                }
+                                else
+                                    continue;
+                            }
+                            oc = new OneContact(gc);
+                            if (SettingsProvider.Instance.IsFirstTime)
+                                oc.ClearReference();
+                            goContacts.Add(gc.Id, oc);
+                            _lastStatistic.goReadContacts++;
+                        }
+                    }
+                }
+                else ///need clear cache read data
+                {
+                    goContacts.Clear();
+                }
             }
-            _lastStatistic.goReadContacts += i;
-            syncinfo.GoogleContacts = goContacts.Count;
+
+            if (IsReadAllContact)
+            {
+                LoggerProvider.Instance.Logger.Debug("Read all data from Gmail");
+                OneContact oc = null;
+//                gp.ClearContactItems(); // need refresh before start next read, because ContactItems are cached in program
+                _goMaxContacts = gp.CountContact();
+                syncinfo.GoogleContacts = _goMaxContacts;
+                syncinfo.WorkOnMax = _goMaxContacts;
+                int i = 0;
+                syncinfo.WorkOnNextStep();
+                foreach (Google.Contacts.Contact gc in gp.ContactItems.Entries)
+                {
+                    syncinfo.WorkOn = ++i;
+                    syncinfo.WorkOnNextStep();
+                    oc = new OneContact(gc);
+                    if (SettingsProvider.Instance.IsFirstTime)
+                        oc.ClearReference();
+                    goContacts.Add(gc.Id, oc);
+                }
+                _lastStatistic.goReadContacts += i;
+                syncinfo.GoogleContacts = goContacts.Count;
+            }
         }
         #endregion
 
@@ -449,20 +600,6 @@ namespace GoogleContact
                     continue;
                 }
                 outItem=(OneContact)ouContacts[goItem.ReferenceID];
-                #region DUMP AMEX
-#if (DUMP_AMEX)
-                if ((outItem.LastName == "AMEX") || (outItem.FirstName == "AMEX"))
-                {
-                    sb.Remove(0, sb.ToString().Length);
-                    sb.AppendLine(string.Format("Update contact Outlook - Google: {0} - {1}", outItem._MyID, goItem._MyID));
-                    sb.AppendLine(string.Format("User name: {0} {1}", outItem.FirstName, outItem.LastName));
-                    sb.AppendLine(string.Format("MD5 Oulook/Google: {0} / {1}", outItem.MD5selfCount, goItem.MD5selfCount));
-                    sb.AppendLine(string.Format("MD5 source:\r\n{0}\r\n{1}", outItem.SummAllData(), goItem.SummAllData()));
-                    sb.AppendLine(string.Format("Last Update Outlook/Google:  {0} / {1}", outItem.UpdateTime, goItem.UpdateTime));
-                    LoggerProvider.Instance.Logger.Debug(sb.ToString());
-                }
-#endif
-                #endregion
 
                 if (outItem.MD5selfCount != goItem.MD5selfCount)
                 {

@@ -30,10 +30,10 @@ namespace GoogleContact
         private Google.Contacts.ContactsRequest _cr;
         private bool _isLogon;
         private static GoogleProvider _gp;
-        private Feed<Google.Contacts.Contact> _contactItems;
-        private Feed<Google.Contacts.Group> _contactGroups;
+//        private Feed<Google.Contacts.Contact> _contactItems;
+//        private Feed<Google.Contacts.Group> _contactGroups;
         private Dictionary<string, Google.Contacts.Group> _groupList;
-        private bool _isUpdated = true;
+//        private bool _isUpdated = true;
         #endregion
 
         #region Creator and reference to singletone
@@ -66,7 +66,6 @@ namespace GoogleContact
         {
             get
             {
-                //LoggerProvider.Instance.Logger.Debug("try RequestSettings(Constants.ApplicationName, _userName, _userPwd) ({0},{1},{2})", Constants.ApplicationName, _userName, _userPwd);
                 if (_cr == null)
                 {
                     LoggerProvider.Instance.Logger.Debug("Google.Contacts.ContactRequest doesn't exist");
@@ -146,23 +145,29 @@ namespace GoogleContact
         {
             get
             {
-                if ((_contactItems == null) || _isUpdated)
-                {
-                    _contactItems = cr.GetContacts();
-                    LoggerProvider.Instance.Logger.Debug("Now first time read od re-read Contact feed");
-                }
-                if (_contactItems == null)
-                    throw new NullReferenceException("Can't get Google.Contacts.Contact feed.");
-                _isUpdated = false;
-                return _contactItems;
+                return cr.GetContacts(); // now read on every time all contacts
             }
         }
         /// <summary>
-        /// Reread cntact items
+        /// Read all contact from google witch change after LastCacheTime
         /// </summary>
-        public void ClearContactItems()
+        /// <param name="LastCacheTime"></param>
+        /// <returns></returns>
+        public Feed<Google.Contacts.Contact> ContactItemsChangedAfter(DateTime LastCacheTime)
         {
-            _isUpdated = true;
+            ContactsQuery query = new ContactsQuery(ContactsQuery.CreateContactsUri("default"));
+            query.StartDate = LastCacheTime;
+            query.ShowDeleted = true;
+            return cr.Get<Google.Contacts.Contact>(query);
+        }
+        /// <summary>
+        /// Return one contact based on their conntact ID
+        /// </summary>
+        /// <param name="ContactID">Same asi MyID from OneContact structure</param>
+        /// <returns></returns>
+        public Google.Contacts.Contact GetOneContact(string ContactID)
+        {
+            return cr.Retrieve<Google.Contacts.Contact>(new Uri(ContactID));
         }
         #endregion
 
@@ -175,6 +180,9 @@ namespace GoogleContact
         public Google.Contacts.Group GetContactGroupByName(string GroupName)
         {
             ContactGroupsInitialize();
+
+            if (GroupName.StartsWith("System Group: ")) // for all system group need remove this part from name
+                GroupName = GroupName.Substring("System Group: ".Length);
             if (_groupList.ContainsKey(GroupName))
                 return _groupList[GroupName];
             return null;
@@ -245,12 +253,12 @@ namespace GoogleContact
         /// </summary>
         private void ContactGroupsInitialize()
         {
-            if (_contactGroups == null)
+            //if (_contactGroups == null)
             {
-                _contactGroups = cr.GetGroups();
+                Feed<Google.Contacts.Group> _contactGroups = cr.GetGroups();
                 LoggerProvider.Instance.Logger.Debug("Read Google Groups");
-                if (_contactItems == null)
-                    throw new NullReferenceException("Can't get Google.Contacts.Contact feed.");
+                //if (_contactItems == null)
+                //    throw new NullReferenceException("Can't get Google.Contacts.Contact feed.");
                 // Fill internal Dictionary
                 if (_groupList == null)
                     _groupList = new Dictionary<string, Google.Contacts.Group>();
@@ -259,10 +267,15 @@ namespace GoogleContact
                 foreach (Google.Contacts.Group g in _contactGroups.Entries)
                 {
                     if (string.IsNullOrEmpty(g.SystemGroup))
-                        _groupList.Add(g.Title, g);
+                    {
+                        if (!_groupList.ContainsKey(g.Title)) // problem when rename my group to same name as System Group
+                            _groupList.Add(g.Title, g);
+                    }
                     else
-                        _groupList.Add(g.SystemGroup, g);
-
+                    {
+                        if (!_groupList.ContainsKey(g.SystemGroup))
+                            _groupList.Add(g.SystemGroup, g);
+                    }
                 }
             }
         }
@@ -403,7 +416,7 @@ namespace GoogleContact
             try
             {
                 ret = cr.Insert(feedUri, contact);
-                _isUpdated = true;
+//                _isUpdated = true;
                 LoggerProvider.Instance.Logger.Debug("New contact inserted sucessful");
             }
             catch (GDataRequestException e)
@@ -446,7 +459,7 @@ namespace GoogleContact
             try
             {
                 ret = cr.Update(contact);
-                _isUpdated = true;
+//                _isUpdated = true;
                 LoggerProvider.Instance.Logger.Debug("New contact Updated sucessful");
             }
             catch (GDataRequestException e)
@@ -487,7 +500,7 @@ namespace GoogleContact
             try
             {
                 cr.Delete(contact);
-                _isUpdated = true;
+//                _isUpdated = true;
                 LoggerProvider.Instance.Logger.Debug("Contact delete sucesfull");
             }
             catch (GDataRequestException e)

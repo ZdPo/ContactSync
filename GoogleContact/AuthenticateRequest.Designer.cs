@@ -80,7 +80,7 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // AutenticateRequest
+            // AuthenticateRequest
             // 
             this.AcceptButton = this.btnOK;
             resources.ApplyResources(this, "$this");
@@ -97,7 +97,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "AutenticateRequest";
+            this.Name = "AuthenticateRequest";
             this.ShowInTaskbar = false;
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -9,19 +9,19 @@ using System.Drawing;
 
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
+using System.Collections;
+using System.Xml.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace GoogleContact
 {
     /// <summary>
     /// Some help methods
     /// </summary>
-    class Utils
+    public static class Utils
     {
-        /// <summary>
-        /// Based of FxCop recomendation
-        /// </summary>
-        private Utils()
-        {}
+
+        #region MD5
         /// <summary>
         /// Calculate MD5 HASH from source string
         /// </summary>
@@ -145,7 +145,9 @@ namespace GoogleContact
 
             return plaintext;
         }
+        #endregion
 
+        #region Images
         /// <summary>
         /// Create name for Contact picture from Outlook
         /// </summary>
@@ -153,7 +155,7 @@ namespace GoogleContact
         /// <returns></returns>
         public static string CreateContactPictureName(Outlook.ContactItem contact)
         {
-            return string.Format("{0}\\Contact_{1}.jpg", Path.GetDirectoryName(PathToTempPicture()), contact.EntryID);
+            return Path.Combine(Path.GetDirectoryName(PathToTempPicture()), string.Format(Constants.FormatImageCacheOutlook, contact.EntryID));
         }
         /// <summary>
         /// Create name for Contact picture from Google
@@ -163,8 +165,9 @@ namespace GoogleContact
         public static string CreateContactPictureName(Google.Contacts.Contact contact)
         {
             Uri ur = new Uri(contact.Id);
-            return string.Format("{0}\\Contact_{1}.jpg", Path.GetDirectoryName(PathToTempPicture()), ur.Segments[ur.Segments.Length-1]);
+            return Path.Combine(Path.GetDirectoryName(PathToTempPicture()), string.Format(Constants.FormatImageCacheGoogle, ur.Segments[ur.Segments.Length-1]));
         }
+
         /// <summary>
         /// Return file name in temporary file with Contact image
         /// Source code uses from http://www.scip.be/index.php?Page=ArticlesNET07
@@ -323,5 +326,293 @@ namespace GoogleContact
                 }
             return path.ToString();
         }
+        #endregion
+
+        #region Data Serializate
+        /// <summary>
+        /// Create name for Google cache file
+        /// </summary>
+        /// <returns></returns>
+        private static string CreateGoogleCacheName()
+        {
+            return string.Format("{0}\\Contact_{1}.cache", Path.GetDirectoryName(PathToTempPicture()), "google");
+        }
+        /// <summary>
+        /// Create name for Outlook cache file
+        /// </summary>
+        /// <returns></returns>
+        private static string CreateOutlookCacheName()
+        {
+            return string.Format("{0}\\Contact_{1}.cache", Path.GetDirectoryName(PathToTempPicture()), "outlook");
+        }
+        /// <summary>
+        /// Write data to cache
+        /// </summary>
+        /// <param name="outData"></param>
+        /// <param name="isOutlook"></param>
+        private static void SerializeToXML(List<OneContactBase> outData, bool isOutlook)
+        {
+            string FileName=isOutlook ? CreateOutlookCacheName() : CreateGoogleCacheName();
+            try
+            {
+                if (File.Exists(FileName))
+                {
+                    File.Delete(FileName);
+                    LoggerProvider.Instance.Logger.Debug("Delete current cache file {0}", FileName);
+                }
+                if (File.Exists(CacheDateFileName(isOutlook)))
+                {
+                    File.Delete(CacheDateFileName(isOutlook));
+                    LoggerProvider.Instance.Logger.Debug("Delete current cache timestamp file {0}", CacheDateFileName(isOutlook));
+                }
+                using (FileStream fs = new FileStream(FileName, FileMode.Create))
+                {
+                    LoggerProvider.Instance.Logger.Debug("Serialize to XML {0}", FileName);
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<OneContactBase>), new Type[] { typeof(List<OneContact>) });
+                    serializer.Serialize(fs, outData);
+                    fs.Flush();
+                    fs.Close();
+                    SaveCacheDate(isOutlook);
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggerProvider.Instance.Logger.Error(ex);
+            }
+
+        }
+        /// <summary>
+        /// Try read data from cache and return list of this data
+        /// </summary>
+        /// <param name="isOutlook"></param>
+        /// <returns></returns>
+        static List<OneContactBase> DeserializeFromXML(bool isOutlook)
+        {
+            List<OneContactBase> inData = null;
+            if (File.Exists(isOutlook ? CreateOutlookCacheName() : CreateGoogleCacheName()))
+            {
+                try
+                {
+                    using (System.IO.FileStream fs = new System.IO.FileStream(isOutlook ? CreateOutlookCacheName() : CreateGoogleCacheName(),
+                        System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(List<OneContactBase>), new Type[] { typeof(List<OneContact>) });
+                        inData = (List<OneContactBase>)serializer.Deserialize(fs);
+                        fs.Flush();
+                        fs.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LoggerProvider.Instance.Logger.Error(ex);
+                }
+            }
+            else
+                LoggerProvider.Instance.Logger.Warn("Requested cache file not exist: {0}", isOutlook ? CreateOutlookCacheName() : CreateGoogleCacheName());
+            return inData;
+        }
+        /// <summary>
+        /// Create cache for Google
+        /// </summary>
+        /// <param name="goCotacts"></param>
+        public static void WriteGoogleToCache(Hashtable goCotacts)
+        {
+            LoggerProvider.Instance.Logger.Debug("Write Google to data to cache");
+            List<OneContactBase> goList = new List<OneContactBase>();
+            foreach (OneContactBase cb in goCotacts.Values)
+            {
+                cb.IsFromCache = true;
+                goList.Add(cb);
+            }
+            SerializeToXML(goList, false);
+        }
+
+        /// <summary>
+        /// Create cache for Outlook
+        /// </summary>
+        /// <param name="ouCotacts"></param>
+        public static void WriteOutlookToCache(Hashtable ouCotacts)
+        {
+            LoggerProvider.Instance.Logger.Debug("Write Outlook to data to cache");
+            List<OneContactBase> goList = new List<OneContactBase>();
+            foreach (OneContactBase cb in ouCotacts.Values)
+            {
+                cb.IsFromCache = true;
+                goList.Add(cb);
+            }
+            SerializeToXML(goList, true);
+        }
+
+        /// <summary>
+        /// Return HT contains Outlook data from cache. In any error return null
+        /// </summary>
+        /// <returns></returns>
+        public static Hashtable ReadOutlookFromCache(ref DateTime create)
+        {
+            List<OneContactBase> readList = DeserializeFromXML(true);
+            
+            Hashtable ht = new Hashtable();
+            if (readList != null)
+            {
+                foreach (OneContactBase on in readList)
+                {
+                    on.IsFromCache = true;
+                    on.MD5selfCount = on.MD5Actual();
+                    ht.Add(on._MyID, on);
+                }
+                try
+                {
+                    FileInfo i = new FileInfo(CreateOutlookCacheName());
+                    create = i.CreationTime;
+                }
+                catch (Exception e)
+                {
+                    LoggerProvider.Instance.Logger.Error(e);
+                    create = DateTime.MinValue;
+                }
+            }
+            return ht;
+        }
+        /// <summary>
+        /// Return HT contains Google data from cache. In any error return null
+        /// </summary>
+        /// <returns></returns>
+        public static Hashtable ReadGoogleFromCache(ref DateTime create)
+        {
+            List<OneContactBase> readList = DeserializeFromXML(false);
+            Hashtable ht = new Hashtable();
+            if (readList != null)
+            {
+                foreach (OneContactBase on in readList)
+                {
+                    on.IsFromCache = true;
+                    on.MD5selfCount = on.MD5Actual();
+                    ht.Add(on._MyID, on);
+                }
+                try
+                {
+                    FileInfo i = new FileInfo(CreateGoogleCacheName());
+                    create = i.CreationTime;
+                }
+                catch (Exception e)
+                {
+                    LoggerProvider.Instance.Logger.Error(e);
+                    create = DateTime.MinValue;
+                }
+            }
+            return ht;
+        }
+        #endregion
+
+        #region Delete data from Cache
+        /// <summary>
+        /// This use when need remove cache file (disable it)
+        /// </summary>
+        /// <param name="isOutlook"></param>
+        public static void RemoveCacheFile(bool isOutlook)
+        {
+            string FileName = isOutlook ? CreateOutlookCacheName() : CreateGoogleCacheName();
+            try
+            {
+                if (File.Exists(FileName))
+                {
+                    File.Delete(FileName);
+                    LoggerProvider.Instance.Logger.Debug("Delete current cache file {0}", FileName);
+                }
+                if (File.Exists(CacheDateFileName(isOutlook)))
+                {
+                    File.Delete(CacheDateFileName(isOutlook));
+                    LoggerProvider.Instance.Logger.Debug("Delete current cache timestamp file {0}", CacheDateFileName(isOutlook));
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggerProvider.Instance.Logger.Error(ex);
+            }
+            RemoveCacheImages(isOutlook);
+        }
+
+        /// <summary>
+        /// Delete all image file from cache
+        /// </summary>
+        /// <param name="isOutlook">define what source delete</param>
+        public static void RemoveCacheImages(bool isOutlook)
+        {
+            string FileName = Path.GetDirectoryName(isOutlook ? CreateOutlookCacheName() : CreateGoogleCacheName());
+            string FoundName = isOutlook ? string.Format(Constants.FormatImageCacheOutlook, "*") : string.Format(Constants.FormatImageCacheGoogle, "*");
+            string[] FileList = Directory.GetFiles(FileName, FoundName);
+            foreach (string f in FileList)
+            {
+                if (File.Exists(f))
+                {
+                    try
+                    {
+                        File.Delete(f);
+                    }
+                    catch (FileNotFoundException fe)
+                    {
+                        LoggerProvider.Instance.Logger.Error("File name:{0}\r\n{1}", fe.FileName, fe.Message);
+                    }
+                    catch (UnauthorizedAccessException uae)
+                    {
+                        LoggerProvider.Instance.Logger.Error("File name:{0}\r\n{1}", f, uae.Message);
+                    }
+                }
+            }
+
+        }
+        #endregion
+
+        #region Save DateTime of last synchronization
+        /// <summary>
+        /// Save date when need start read changes on servers
+        /// </summary>
+        /// <param name="IsOutlook">True when save this for outlook</param>
+        public static void SaveCacheDate(bool IsOutlook)
+        {
+            try
+            {
+                TextWriter tw = new StreamWriter(CacheDateFileName(IsOutlook));
+                tw.WriteLine(DateTime.Now.ToString("yyyyMMdd HH:mm:ss"));
+                tw.Close();
+            }
+            catch (IOException ioe)
+            {
+                LoggerProvider.Instance.Logger.Error("Save timestamp for cache has problem", ioe);
+            }
+            catch (FormatException fe)
+            {
+                LoggerProvider.Instance.Logger.Error("Save timestamp for cache has problem", fe);
+            }
+        }
+        /// <summary>
+        /// Load saved datetime where need start read changes from server
+        /// </summary>
+        /// <param name="IsOutlook">True when save this for outlook</param>
+        /// <returns>Read date time or DateTime.MinValue</returns>
+        public static DateTime LoadCacheDate(bool IsOutlook)
+        {
+            DateTime ret=DateTime.MinValue;
+            if (File.Exists(CacheDateFileName(IsOutlook)))
+            {
+                try
+                {
+                    string Stamp = File.ReadAllText(CacheDateFileName(IsOutlook));
+                    if (!DateTime.TryParse(Stamp, out ret))
+                        ret = DateTime.MinValue;
+                }
+                catch (IOException ioe)
+                {
+                    LoggerProvider.Instance.Logger.Error("Load timestamp for cache has problem", ioe);
+                }
+            }
+            return ret;
+        }
+
+        private static string CacheDateFileName(bool IsOutlook)
+        {
+            return string.Format("{0}\\Contact_{1}.time", Path.GetDirectoryName(PathToTempPicture()), IsOutlook ? "outlook" : "google");
+        }
+        #endregion
     }
 }
