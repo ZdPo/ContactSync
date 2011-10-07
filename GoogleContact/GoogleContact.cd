@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GoogleContact.OneContactBase">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Class Name="GoogleContact.OneContactBase.PhoneDetail" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>OneContactBase.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="GoogleContact.OneContactBase.AddressDetail" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>OneContactBase.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAwgHAIIAQBAWAhAAAQAIEAmggICEICAKQABAAIGAg=</HashCode>
+      <FileName>OneContactBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.OneContact">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BIgAAAAAEAgAAAAAAAAAAAAAAgEAAE0AACAAAAACAAA=</HashCode>
+      <FileName>OneContact.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.LoggerProvider" BaseTypeListCollapsed="true">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEASAAACIAAAAAAAAAAAABIAgAAAAAQEAAAAAAAAA=</HashCode>
+      <FileName>LoggerProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GoogleContact.LastStatistic">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIBgwEAGAEAAAAgQAAggQAIAIOARIgABAAABAAAA=</HashCode>
+      <FileName>LastStatistic.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.GoogleProvider">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>hA4AIEoAAAAAAAAAAAAEABAQBUMAAAQAAAIEBAABBAg=</HashCode>
+      <FileName>GoogleProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.Constants">
+    <Position X="18" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="GoogleContact.Constants.PhoneType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Constants.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="GoogleContact.Constants.AddressType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Constants.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="GoogleContact.Constants.FirstSetupSynchronize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Constants.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="GoogleContact.Constants.SetupSynchronize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Constants.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="GoogleContact.Constants.LogLevel" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Constants.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAIAEAEABgAEAAAAAAAAAAAACAAAAAAIAAgAIAAAAAA=</HashCode>
+      <FileName>Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.OutlookProvider">
+    <Position X="14.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAAAgAAABAgAANCAAQAAAAAABCAg=</HashCode>
+      <FileName>OutlookProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.Properties.Settings">
+    <Position X="16.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAEAgAAoAAAAACJAAMCAwAAAAAACAA=</HashCode>
+      <FileName>Settings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.SettingsProvider">
+    <Position X="11" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAICAAQCgAgQBwAAAAAEAAECABBACQWAACAIAAAA=</HashCode>
+      <FileName>SettingsProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoogleContact.Synchronizer" BaseTypeListCollapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAQCAAAACHIAAECAgAAAAACAAALQgIBgwEiAE=</HashCode>
+      <FileName>Synchronizer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GoogleContact.Utils">
+    <Position X="12.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABEAIgABAAACAAAAYCCABAEAAAAAACAAAUAAQAAAQgQ=</HashCode>
+      <FileName>Utils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
