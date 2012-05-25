@@ -81,6 +81,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_29F39322B36EF86CAC78541ACCCE2B06"
+        "OwnerKey" = "8:_C2E075F121A4463DA405FD91A1B06CB1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_37CEFE3E7018AD62E7DFB29A245485AF"
         "OwnerKey" = "8:_F2EBBB607D1CEB349F1B9398984FE341"
         "MsmSig" = "8:_UNDEFINED"
@@ -268,6 +274,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_29F39322B36EF86CAC78541ACCCE2B06"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_19F744B988A2B3DFB0348F0A3544833B"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -380,6 +392,16 @@
                     {
                     "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
                     "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Office.PIARedist.2010"
+                    {
+                    "Name" = "8:Microsoft Office 2010 Primary Interop Assemblies"
+                    "ProductCode" = "8:Microsoft.Office.PIARedist.2010"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.VSTORuntime.4.0"
+                    {
+                    "Name" = "8:Microsoft Visual Studio 2010 Tools for Office Runtime (x86 and x64)"
+                    "ProductCode" = "8:Microsoft.VSTORuntime.4.0"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
                     {
@@ -510,6 +532,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_29F39322B36EF86CAC78541ACCCE2B06"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_29F39322B36EF86CAC78541ACCCE2B06"
+                    {
+                    "Name" = "8:Microsoft.VisualBasic.PowerPacks.Vs.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.VisualBasic.PowerPacks.Vs.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2C27712750B2421CA7E6610BB7D63EE1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_37CEFE3E7018AD62E7DFB29A245485AF"
             {
             "AssemblyRegister" = "3:1"
@@ -545,7 +598,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Google.GData.Contacts, Version=1.8.0.0, Culture=neutral, PublicKeyToken=7e065189dd4b982f, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Google.GData.Contacts, Version=1.9.0.0, Culture=neutral, PublicKeyToken=7e065189dd4b982f, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4262E308CE8E001465B9ABE35A4E27E6"
@@ -658,7 +711,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Google.GData.Client, Version=1.8.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Google.GData.Client, Version=1.9.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_83C40F5860C4678116A4EF4CD6E85C24"
@@ -709,7 +762,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Google.GData.Extensions, Version=1.8.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Google.GData.Extensions, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_AB1F72AC587D2B8B5E797CFFE5AD7EDD"
@@ -968,7 +1021,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Google Contact Synchronizer"
         "ProductCode" = "8:{F9D6A375-DCCA-45A0-A698-B4AF458CEF4D}"
-        "PackageCode" = "8:{99A0962C-95F1-43C4-B605-FE95E43F23C7}"
+        "PackageCode" = "8:{29D5E6F9-D5E9-4BDB-8BD7-15B58FDCAC12}"
         "UpgradeCode" = "8:{B134FA0A-5EE0-40B5-9DBD-4D07637F1763}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

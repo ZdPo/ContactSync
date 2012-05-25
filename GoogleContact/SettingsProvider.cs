@@ -131,6 +131,18 @@ namespace GoogleContact
             }
         }
         /// <summary>
+        /// Maximal time between two synchronization for using cache file.
+        /// </summary>
+        public int CacheTTL
+        {
+            get { return Properties.Settings.Default.CacheTTL; }
+            set
+            {
+                Properties.Settings.Default.CacheTTL = value;
+                _isSaved = false;
+            }
+        }
+        /// <summary>
         /// Is first Time synchronization
         /// </summary>
         public bool IsFirstTime

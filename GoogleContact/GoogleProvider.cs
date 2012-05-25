@@ -167,6 +167,7 @@ namespace GoogleContact
         /// <returns></returns>
         public Google.Contacts.Contact GetOneContact(string ContactID)
         {
+            LoggerProvider.Instance.Logger.Debug("Try get contact ID: {0}", ContactID);
             return cr.Retrieve<Google.Contacts.Contact>(new Uri(ContactID));
         }
         #endregion

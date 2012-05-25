@@ -258,7 +258,8 @@ namespace GoogleContact
                         JobTitle = en.Title;
                     if (!string.IsNullOrEmpty(en.Department))
                         Department = en.Department;
-                    break;
+                    if (!string.IsNullOrEmpty(Company))
+                        break;
                 }
             }
             #endregion
@@ -384,8 +385,8 @@ namespace GoogleContact
             #endregion
 
             #region Company
-            if (!string.IsNullOrEmpty(SourceData.Companies))
-                Company = SourceData.Companies;
+            if (!string.IsNullOrEmpty(SourceData.CompanyName))
+                Company = SourceData.CompanyName;
             if (!string.IsNullOrEmpty(SourceData.Department))
                 Department = SourceData.Department;
             if (!string.IsNullOrEmpty(SourceData.JobTitle))
@@ -801,7 +802,8 @@ namespace GoogleContact
             #endregion
 
             #region Company
-            outContact.Companies = DataOrEmpty(Company);
+            outContact.CompanyName = DataOrEmpty(Company);
+            //LoggerProvider.Instance.Logger.Debug("Company for contact [{0} {1}] = [{2}]", LastName, FirstName, Company);
             outContact.Department = DataOrEmpty(Department);
             outContact.JobTitle = DataOrEmpty(JobTitle);
             #endregion
@@ -824,17 +826,32 @@ namespace GoogleContact
         }
 
         /// <summary>
-        /// Save data to define GoogleContacts.Contac and empty relevant fields
+        /// Save data to define GoogleContacts.Contact and empty relevant fields
         /// </summary>
         /// <param name="goContact"></param>
         /// <returns></returns>
         private Google.Contacts.Contact SaveToGoogle(Google.Contacts.Contact goContact)
         {
-            /// re-read contact when it read from Cache
-            if (_rawSource == null) // ned reread raw data
+            /// re-read contact when it read from Cache main contact is Outlook?
+            if (_rawSource == null) // ned re-read raw data
             {
-                _rawSource = GoogleProvider.GetProvider.GetOneContact(_MyID);
+                try
+                {
+                    if (IsSourceOutlook)
+                        _rawSource = OutlookProvider.Instance.FindItemfromID(_MyID);
+                    else
+                        _rawSource = GoogleProvider.GetProvider.GetOneContact(_MyID);
+                }
+                catch (UriFormatException ue)
+                {
+                    LoggerProvider.Instance.Logger.Error(ue);
+                }
             }
+            //if (_rawSource.GetType().IsCOMObject)
+            //{
+            //    _rawSource = GoogleProvider.GetProvider.GetOneContact(_MyID);
+            //}
+
 
             #region Update Image on Google Contact
             ///For start need change it and re-read raw contact

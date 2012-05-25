@@ -4,7 +4,7 @@
 /// use for dump data to log
 
 #undef SIMULATE_SAVE
-#undef DUMP_CONTACTS
+//#undef DUMP_CONTACTS
 
 using System;
 using System.Collections.Generic;
@@ -661,7 +661,7 @@ namespace GoogleContact
         /// <param name="contacts">Referces to one of local list</param>
         private static void DumpContactToLog(ref Hashtable contacts)
         {
-#if (DEBUG)
+#if (DEBUG1)
             foreach (OneContact c in contacts.Values)
             {
                 c.DumpActualDataToLog();
@@ -680,6 +680,7 @@ namespace GoogleContact
         internal bool AddNewGoogleContact(OneContact c)
         {
             Google.Contacts.Contact goContact = null;
+#warning There is a problem with add google contact with Image
 #if (!SIMULATE_SAVE)
             Google.Contacts.Contact goContactNew = null;
             OneContact hlp = null;
@@ -800,6 +801,12 @@ namespace GoogleContact
         {
             if (sourceGoogle.IsSourceOutlook || (!destinationOutlook.IsSourceOutlook))
                 return false;
+
+#if (DUMP_CONTACTS)
+            sourceGoogle.DumpActualDataToLog();
+            destinationOutlook.DumpActualDataToLog();
+#endif
+
             destinationOutlook.UpdateFromOther(sourceGoogle);
             return true;
         }

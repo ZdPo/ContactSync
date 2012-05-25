@@ -17,7 +17,7 @@ using System.Xml;
 namespace GoogleContact
 {
     /// <summary>
-    /// This is a bse for one contact store in RAM. Data are independ of source, it's normalize do same structure and prepare for serialization.
+    /// This is a base for one contact store in RAM. Data are independ of source, it's normalize do same structure and prepare for serialization.
     /// </summary>
     [XmlRoot(ElementName = "OneContactBase", DataType = "GoogleContact.OneContactBase", IsNullable = false)]
     public class OneContactBase // : IXmlSerializable
@@ -129,6 +129,11 @@ namespace GoogleContact
         #endregion
 
         #region Company
+        /// <summary>
+        /// Company Name 
+        /// Outlook = CompanyName
+        /// Google = Organizations[].Name
+        /// </summary>
         [XmlElement("Company", typeof(string))]
         public string Company = "";
         [XmlElement("Department", typeof(string))]
@@ -315,7 +320,7 @@ namespace GoogleContact
             return Utils.CountMD5(SummAllData());
         }
         /// <summary>
-        /// Return data in oneLongString
+        /// Return data in one long String
         /// </summary>
         /// <returns></returns>
         public string SummAllData()
@@ -446,7 +451,7 @@ namespace GoogleContact
 
         #region Private function
         /// <summary>
-        /// Vraci odpovidajici telephone nebo ""
+        /// Return right phone number or ""
         /// </summary>
         /// <param name="typ"></param>
         /// <returns></returns>
@@ -460,7 +465,7 @@ namespace GoogleContact
             return string.Empty;
         }
         /// <summary>
-        /// Vraci odpovidajici adresu
+        /// Return requested address
         /// </summary>
         /// <param name="typ"></param>
         /// <returns></returns>

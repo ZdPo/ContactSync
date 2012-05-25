@@ -117,4 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Use this, when you want disassociate connection between Google / Outlook and clear all synchronization keys. After using these options contact on selected side clear own synchronization keys.  Is very recommend clear this keys when you don’t want more use this products.
+</value>
+  </data>
 </root>
