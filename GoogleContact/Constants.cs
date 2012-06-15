@@ -10,7 +10,7 @@ namespace GoogleContact
     public class Constants
     {
         [XmlIgnore]
-        public const string ApplicationName = "Pok.Zde.GoogleContactSynchronizer";
+        public const string ApplicationName = "Pok.Zde Google Contact";
         /// <summary>
         /// Jmeno promene pro identifikaci odkazu na google account
         /// </summary>

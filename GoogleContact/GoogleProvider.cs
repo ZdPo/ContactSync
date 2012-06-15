@@ -15,6 +15,7 @@ using Google.GData.Extensions;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
 using System.IO;
+using System.Net;
 
 
 namespace GoogleContact
@@ -25,21 +26,32 @@ namespace GoogleContact
     class GoogleProvider
     {
         #region global variables
-        private string _userName = "";
-        private string _userPwd = "";
         private Google.Contacts.ContactsRequest _cr;
         private bool _isLogon;
         private static GoogleProvider _gp;
-//        private Feed<Google.Contacts.Contact> _contactItems;
-//        private Feed<Google.Contacts.Group> _contactGroups;
         private Dictionary<string, Google.Contacts.Group> _groupList;
-//        private bool _isUpdated = true;
+
+        //OAuth 2.0
+        private static string redirectUri = "urn:ietf:wg:oauth:2.0:oob";
+        private static string scopes = "https://www.google.com/m8/feeds/";
+        private static string clientID = "1050990823108.apps.googleusercontent.com";
+        private static string clientSecret = "LyGLl1FY6ZiDq8b2epoFARs7";
+        private OAuth2Parameters OAuth20 = new OAuth2Parameters();
+        public bool GoogleIsAuthorize { get; private set; }
+        public string GoogleAuthorizeRequestUrl { get; private set; }
+
         #endregion
 
         #region Creator and reference to singletone
         private GoogleProvider()
         {
-            LoggerProvider.Instance.Logger.Debug("Class GoogleProvider created");
+            LoggerProvider.Instance.Logger.Debug("Class GoogleProvider created and fill data for OAuth 2.0");
+            OAuth20.ClientId = clientID;
+            OAuth20.ClientSecret = clientSecret;
+            OAuth20.RedirectUri = redirectUri;
+            OAuth20.Scope = scopes;
+            GoogleIsAuthorize = false;
+            GoogleAuthorizeRequestUrl = OAuthUtil.CreateOAuth2AuthorizationUrl(OAuth20);
         }
         /// <summary>
         /// Return singletone reference to this class
@@ -66,21 +78,26 @@ namespace GoogleContact
         {
             get
             {
+
+                /// User this demo
+                /// http://code.google.com/p/google-gdata/source/browse/trunk/clients/cs/samples/oauth2_sample/oauth2demo.cs
                 if (_cr == null)
                 {
                     LoggerProvider.Instance.Logger.Debug("Google.Contacts.ContactRequest doesn't exist");
-                    RequestSettings rs = new RequestSettings(Constants.ApplicationName, _userName, _userPwd);
+                    //GOAuth2RequestFactory requestFactory = new GOAuth2RequestFactory("Contacts", Constants.ApplicationName, OAuth20);
+                    RequestSettings rs = new RequestSettings(Constants.ApplicationName, OAuth20);
+                    //ContactsService contactService = new ContactsService(rs);
+                    //contactService.RequestFactory = requestFactory;
                     rs.AutoPaging = true;
                     try
                     {
                         _cr = new Google.Contacts.ContactsRequest(rs);
-                        _isLogon = true;
                     }
                     catch (System.Exception e)
                     {
                         _isLogon = false;
                         _cr = null;
-                        LoggerProvider.Instance.Logger.Error("Problem try read all contacts Request.");
+                        LoggerProvider.Instance.Logger.Error("Problem read all contacts Request.");
                         LoggerProvider.Instance.Logger.Error(e);
                     }
                 }
@@ -99,6 +116,7 @@ namespace GoogleContact
                 LoggerProvider.Instance.Logger.Debug("Log off from Google account");
                 _cr = null;
                 _isLogon = false;
+
             }
         }
         #endregion
@@ -109,31 +127,55 @@ namespace GoogleContact
         /// </summary>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        public bool Logon(string username, string password)
+        //public bool Logon()
+        //{
+        //}
+
+        /// <summary>
+        /// Authorize request
+        /// </summary>
+        /// <param name="AuthorizeCode">Write authorize Code from Web pages</param>
+        /// <returns>True if success authorize</returns>
+        public bool AuthorizeSession(string AuthorizeCode)
         {
-            bool noMatch = true;
-            if (_userName != username.ToLower())
+            LoggerProvider.Instance.Logger.Debug("Try authorize google request with access code from web. Access code is: {0}", AuthorizeCode);
+            OAuth20.AccessCode = AuthorizeCode;
+            _isLogon = false;
+            try
             {
-                _userName = username.ToLower();
-                noMatch = false;
+                OAuthUtil.GetAccessToken(OAuth20);
+                _isLogon = true;
             }
-            if (_userPwd != password)
+            catch (WebException we)
             {
-                _userPwd = password;
-                noMatch = false;
+                LoggerProvider.Instance.Logger.Error("Google Authorize Token not alid.");
+                LoggerProvider.Instance.Logger.Error(we);
             }
-            if (_isLogon && !noMatch) // new user or password. Need reload
-                Logoff();
-            LoggerProvider.Instance.Logger.Debug("Try logon to google account");
-            Google.Contacts.ContactsRequest s = cr; // prepare class for request ... this isn't realy touch google
             return _isLogon;
         }
-        /// <summary>
+        ///// <summary>
         /// Is class for google request prepared? (uses method Logon())
         /// </summary>
         public bool isLogon
         {
             get { return _isLogon; }
+        }
+        /// <summary>
+        /// Return actual time to expire Google Authorization
+        /// </summary>
+        public DateTime AuthorizationValidTo
+        {
+            get { return OAuth20.TokenExpiry; }
+        }
+        /// <summary>
+        /// If token valid and system able request data
+        /// </summary>
+        public bool isLogInAndValid
+        {
+            get
+            {
+                return _isLogon && (OAuth20.TokenExpiry>DateTime.Now.AddMinutes(1));
+            }
         }
         #endregion
 

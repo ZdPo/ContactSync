@@ -19,16 +19,6 @@ namespace GoogleContact
 
         private void ConnectionSettings_Load(object sender, EventArgs e)
         {
-            gUserName.Text = _sp.UserName;
-            //if (_isRemeber)
-            if (_sp.IsRemember)
-                gPassword.Text = _sp.UserPassword;
-            else
-            {
-                //_Password = "";
-                gPassword.Text = "";
-            }
-            gRemember.Checked = _sp.IsRemember;
             chFirstSync.Checked = _sp.IsFirstTime; ;
             switch (SettingsProvider.FirstSynchronizeGet())
             {
@@ -74,16 +64,7 @@ namespace GoogleContact
         #region On Button
         private void button1_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(gUserName.Text) || string.IsNullOrEmpty(gPassword.Text))
-            {
-                LoggerProvider.Instance.Logger.Debug("Close settings without change because Usernameor Password is blank");
-                this.Close();
-            }
-            _sp.UserName = gUserName.Text;
-            _sp.UserPassword = gPassword.Text;
-            _sp.IsRemember = gRemember.Checked;
-            //_isSave = true;
-            _sp.IsFirstTime = chFirstSync.Checked;
+//            _sp.IsFirstTime = chFirstSync.Checked;
             if (rbOu2Go.Checked)
                 _sp.FirstSynchronizeSet(Constants.FirstSetupSynchronize.Outlook2Google);
             else if (rbGo2Ou.Checked)

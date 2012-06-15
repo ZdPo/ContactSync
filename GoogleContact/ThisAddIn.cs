@@ -19,7 +19,7 @@ namespace GoogleContact
             LoggerProvider.Instance.Logger.Debug("******\r\n\t\tProgram start");
             inspectors.NewInspector += new Outlook.InspectorsEvents_NewInspectorEventHandler(inspectors_NewInspector);
             OutlookProvider.Instance.NameSpace = this.Application.Session;
-            GoogleProvider.GetProvider.Logon(SettingsProvider.Instance.UserName, SettingsProvider.Instance.UserPassword);
+            //GoogleProvider.GetProvider.Logon(SettingsProvider.Instance.UserName, SettingsProvider.Instance.UserPassword);
         }
 
         protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject()

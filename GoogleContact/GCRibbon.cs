@@ -25,10 +25,10 @@ namespace GoogleContact
         private void GCRibbon_Load(object sender, RibbonUIEventArgs e)
         {
             LoggerProvider.Instance.Logger.Debug("GCRibbon_Load(object sender, RibbonUIEventArgs e)");
-            if (SettingsProvider.Instance.UserName.Length > 0)
-                btnSync.Enabled = true;
-            else
-                btnSync.Enabled = false;
+            //if (SettingsProvider.Instance.UserName.Length > 0)
+            //    btnSync.Enabled = true;
+            //else
+            //    btnSync.Enabled = false;
         }
 
         #region Button click action
@@ -45,10 +45,10 @@ namespace GoogleContact
                 c.ShowDialog();
                 lastStatistic.Clear();
             }
-            if (SettingsProvider.Instance.UserName.Length > 0)
-                btnSync.Enabled = true;
-            else
-                btnSync.Enabled = false;
+            //if (SettingsProvider.Instance.UserName.Length > 0)
+            //    btnSync.Enabled = true;
+            //else
+            //    btnSync.Enabled = false;
         }
 
         /// <summary>
@@ -62,46 +62,54 @@ namespace GoogleContact
             if (synchr == null)
                 synchr = new Synchronizer(ref lastStatistic);
             LoggerProvider.Instance.Logger.Debug("Click on Synchronize button");
-            if ((SettingsProvider.Instance.UserPassword.Length == 0) || !SettingsProvider.Instance.IsRemember)
+            if (!GoogleProvider.GetProvider.isLogInAndValid)
             {
-                using (AuthenticateRequest ar = new AuthenticateRequest())
+                LoggerProvider.Instance.Logger.Debug("Need authorize google access for application");
+                using (GoogleAccessCode GAccessWindows = new GoogleAccessCode())
                 {
-                    ar.UserName = SettingsProvider.Instance.UserName;
-                    ar.ShowDialog();
-                    if (!ar.IsAccept)
-                        return;
-                    GoogleProvider.GetProvider.Logon(SettingsProvider.Instance.UserName, ar.Password);
+                    GAccessWindows.ClearGoogleAccessCode();
+                    GAccessWindows.CreateRequestOnGoole(GoogleProvider.GetProvider.GoogleAuthorizeRequestUrl);
+                    GAccessWindows.ShowDialog();
+                    if (!string.IsNullOrEmpty(GAccessWindows.ActualGoogleAccessCode))
+                    {
+                        LoggerProvider.Instance.Logger.Debug("Actual authorization code is: {0}", GAccessWindows.ActualGoogleAccessCode);
+                        bool GsessionOk =GoogleProvider.GetProvider.AuthorizeSession(GAccessWindows.ActualGoogleAccessCode);
+                        LoggerProvider.Instance.Logger.Info("Google Session is Authorize with status: {0}", GsessionOk);
+                    }
                 }
             }
-            synchr.SetupSync();
-            try
+            if (GoogleProvider.GetProvider.isLogInAndValid)
             {
-                synchr.Synchronize();
-            }
-            ///TODO: Need change exception type to catch
-            catch (GDataRequestException ge)
-            {
-                MessageBox.Show("Problem in connect to Google site. Detail data is in Log file.", "Synchronize to Google",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
-                LoggerProvider.Instance.Logger.Error(ge);
-            }
-            catch (CaptchaRequiredException ca)
-            {
-                MessageBox.Show("Problem in connect to Google site. Google required CAPTCHA autorization. Detail data is in Log file.", "Synchronize to Google",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
-                LoggerProvider.Instance.Logger.Error(ca);
-            }
-            catch (NullReferenceException ne)
-            {
-                MessageBox.Show("Problem in connect to Google site. Problem when read Google.Contacts.Contact Feed. Detail data is in Log file.", "Synchronize to Google",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
-                LoggerProvider.Instance.Logger.Error(ne);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Problem in synchronize. Data is in Log file.", "Synchronize to Google",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
-                LoggerProvider.Instance.Logger.Error(ex);
+                synchr.SetupSync();
+                try
+                {
+                    synchr.Synchronize();
+                }
+                ///TODO: Need change exception type to catch
+                catch (GDataRequestException ge)
+                {
+                    MessageBox.Show("Problem in connect to Google site. Detail data is in Log file.", "Synchronize to Google",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
+                    LoggerProvider.Instance.Logger.Error(ge);
+                }
+                catch (CaptchaRequiredException ca)
+                {
+                    MessageBox.Show("Problem in connect to Google site. Google required CAPTCHA autorization. Detail data is in Log file.", "Synchronize to Google",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
+                    LoggerProvider.Instance.Logger.Error(ca);
+                }
+                catch (NullReferenceException ne)
+                {
+                    MessageBox.Show("Problem in connect to Google site. Problem when read Google.Contacts.Contact Feed. Detail data is in Log file.", "Synchronize to Google",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
+                    LoggerProvider.Instance.Logger.Error(ne);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Problem in synchronize. Data is in Log file.", "Synchronize to Google",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.ServiceNotification);
+                    LoggerProvider.Instance.Logger.Error(ex);
+                }
             }
             LoggerProvider.Instance.Logger.Debug("Statistic after synchronize\r\n{0}", lastStatistic.StatisticString());
             /// in next release don't dispose because use memored Outlook and Google contacts for better speed in update

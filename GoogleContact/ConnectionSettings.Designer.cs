@@ -28,11 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.gUserName = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.gPassword = new System.Windows.Forms.MaskedTextBox();
-            this.gRemember = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -57,52 +52,9 @@
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 13);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(189, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Set user email of Google Mail account.";
-            // 
-            // gUserName
-            // 
-            this.gUserName.Location = new System.Drawing.Point(16, 30);
-            this.gUserName.Name = "gUserName";
-            this.gUserName.Size = new System.Drawing.Size(186, 20);
-            this.gUserName.TabIndex = 1;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(215, 14);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(147, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Password for Google account";
-            // 
-            // gPassword
-            // 
-            this.gPassword.Location = new System.Drawing.Point(218, 30);
-            this.gPassword.Name = "gPassword";
-            this.gPassword.PasswordChar = '*';
-            this.gPassword.Size = new System.Drawing.Size(186, 20);
-            this.gPassword.TabIndex = 3;
-            // 
-            // gRemember
-            // 
-            this.gRemember.AutoSize = true;
-            this.gRemember.Location = new System.Drawing.Point(16, 56);
-            this.gRemember.Name = "gRemember";
-            this.gRemember.Size = new System.Drawing.Size(125, 17);
-            this.gRemember.TabIndex = 5;
-            this.gRemember.Text = "Remember password";
-            this.gRemember.UseVisualStyleBackColor = true;
-            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 283);
+            this.button1.Location = new System.Drawing.Point(12, 214);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 6;
@@ -113,7 +65,7 @@
             // button2
             // 
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button2.Location = new System.Drawing.Point(93, 283);
+            this.button2.Location = new System.Drawing.Point(93, 214);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 7;
@@ -127,7 +79,7 @@
             this.groupBox1.Controls.Add(this.rbGo2Ou);
             this.groupBox1.Controls.Add(this.rbOu2Go);
             this.groupBox1.Controls.Add(this.chFirstSync);
-            this.groupBox1.Location = new System.Drawing.Point(12, 79);
+            this.groupBox1.Location = new System.Drawing.Point(12, 10);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 118);
             this.groupBox1.TabIndex = 8;
@@ -182,7 +134,7 @@
             this.groupBox2.Controls.Add(this.rbBothSync);
             this.groupBox2.Controls.Add(this.rbGo2OuSync);
             this.groupBox2.Controls.Add(this.rbOut2GoSync);
-            this.groupBox2.Location = new System.Drawing.Point(218, 79);
+            this.groupBox2.Location = new System.Drawing.Point(218, 10);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(186, 118);
             this.groupBox2.TabIndex = 9;
@@ -229,7 +181,7 @@
             this.groupBox3.Controls.Add(this.btnSelectDirectory);
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.txDirectory);
-            this.groupBox3.Location = new System.Drawing.Point(12, 203);
+            this.groupBox3.Location = new System.Drawing.Point(12, 134);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(392, 74);
             this.groupBox3.TabIndex = 10;
@@ -292,7 +244,7 @@
             // 
             // btnAdvanced
             // 
-            this.btnAdvanced.Location = new System.Drawing.Point(272, 282);
+            this.btnAdvanced.Location = new System.Drawing.Point(272, 213);
             this.btnAdvanced.Name = "btnAdvanced";
             this.btnAdvanced.Size = new System.Drawing.Size(131, 23);
             this.btnAdvanced.TabIndex = 11;
@@ -306,23 +258,18 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button2;
-            this.ClientSize = new System.Drawing.Size(428, 326);
+            this.ClientSize = new System.Drawing.Size(428, 246);
             this.Controls.Add(this.btnAdvanced);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.gRemember);
-            this.Controls.Add(this.gPassword);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.gUserName);
-            this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(434, 354);
+            this.MaximumSize = new System.Drawing.Size(434, 274);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(434, 354);
+            this.MinimumSize = new System.Drawing.Size(434, 274);
             this.Name = "ConnectionSettings";
             this.ShowInTaskbar = false;
             this.Text = "Google Connection Settings";
@@ -334,17 +281,11 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox gUserName;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.MaskedTextBox gPassword;
-        private System.Windows.Forms.CheckBox gRemember;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.GroupBox groupBox1;

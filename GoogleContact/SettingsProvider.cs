@@ -52,55 +52,13 @@ namespace GoogleContact
         #endregion
 
         #region property
-        /// <summary>
-        /// Setup user name
-        /// </summary>
-        public string UserName
-        {
-            get {
-                if (string.IsNullOrEmpty(Properties.Settings.Default.UserName))
-                    return "";
-                return Utils.DecryptString(Properties.Settings.Default.UserName);
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    Properties.Settings.Default.UserName = "";
-                else
-                    Properties.Settings.Default.UserName = Utils.EncryptString(value);
-                _isSaved = false;
-            }
-        }
-        /// <summary>
-        /// setup password
-        /// </summary>
-        public string UserPassword
-        {
-            get {
-                if (string.IsNullOrEmpty(Properties.Settings.Default.Password))
-                    return "";
-                return Utils.DecryptString(Properties.Settings.Default.Password); 
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    Properties.Settings.Default.Password="";
-                else
-                    Properties.Settings.Default.Password = Utils.EncryptString(value);
-                _isSaved = false;
-            }
-        }
+
         /// <summary>
         /// Is remember password
         /// </summary>
         public bool IsRemember
         {
-            get { return Properties.Settings.Default.IsRemeber; }
-            set
-            {
-                Properties.Settings.Default.IsRemeber = value;
-                _isSaved = false;
-            }
+            get { return false; }
         }
         /// <summary>
         /// Use local cache for google contact, it's for speedUp read when huge volume of contacts
@@ -361,7 +319,8 @@ namespace GoogleContact
             get
             {
                 if (string.IsNullOrEmpty(Properties.Settings.Default.LogFile))
-                    Properties.Settings.Default.LogFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    Properties.Settings.Default.LogFile = Path.GetTempPath();
+                        //Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 return Properties.Settings.Default.LogFile;
             }
             set

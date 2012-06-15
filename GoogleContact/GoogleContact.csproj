@@ -153,9 +153,18 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="Google.GData.Client, Version=1.9.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL" />
-    <Reference Include="Google.GData.Contacts, Version=1.9.0.0, Culture=neutral, PublicKeyToken=7e065189dd4b982f, processorArchitecture=MSIL" />
-    <Reference Include="Google.GData.Extensions, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL" />
+    <Reference Include="Google.GData.Client, Version=2.1.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\Google\Google Data API SDK\Redist\Google.GData.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.GData.Contacts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=7e065189dd4b982f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\Google\Google Data API SDK\Redist\Google.GData.Contacts.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.GData.Extensions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\Google\Google Data API SDK\Redist\Google.GData.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>True</Private>
@@ -221,12 +230,6 @@
     <Compile Include="AdvancedConfiguration.Designer.cs">
       <DependentUpon>AdvancedConfiguration.cs</DependentUpon>
     </Compile>
-    <Compile Include="AuthenticateRequest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AuthenticateRequest.Designer.cs">
-      <DependentUpon>AuthenticateRequest.cs</DependentUpon>
-    </Compile>
     <Compile Include="ConnectionSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -239,6 +242,12 @@
     </Compile>
     <Compile Include="GCRibbon.Designer.cs">
       <DependentUpon>GCRibbon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleAccessCode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GoogleAccessCode.Designer.cs">
+      <DependentUpon>GoogleAccessCode.cs</DependentUpon>
     </Compile>
     <Compile Include="GoogleProvider.cs" />
     <Compile Include="LastStatistic.cs" />
@@ -256,14 +265,14 @@
     <EmbeddedResource Include="AdvancedConfiguration.resx">
       <DependentUpon>AdvancedConfiguration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AuthenticateRequest.resx">
-      <DependentUpon>AuthenticateRequest.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ConnectionSettings.resx">
       <DependentUpon>ConnectionSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GCRibbon.resx">
       <DependentUpon>GCRibbon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GoogleAccessCode.resx">
+      <DependentUpon>GoogleAccessCode.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
