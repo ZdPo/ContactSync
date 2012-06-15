@@ -27,13 +27,14 @@ namespace GoogleContact
 
             LoggingConfiguration _LogConfiguration = new LoggingConfiguration();
             fileTarget = new FileTarget();
+            fileTarget.Name = "file";
             fileTarget.MaxArchiveFiles = 5;
             fileTarget.FileName = string.Format("{0}/{1}", _LogDirectory, "${shortdate}.log");
             fileTarget.Layout = "${longdate}|${level:uppercase=true}|${callsite:className=true:fileName=true:includeSourcePath=false:methodName=true}|${message}";
             LoggingRule rule2 = new LoggingRule("*", GetLevel(_Level), fileTarget);
-            LogManager.Configuration = _LogConfiguration;
             _LogConfiguration.AddTarget("file", fileTarget);
             _LogConfiguration.LoggingRules.Add(rule2);
+            LogManager.Configuration = _LogConfiguration;
             _logger = LogManager.GetCurrentClassLogger();
         }
 

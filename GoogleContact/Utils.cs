@@ -210,6 +210,11 @@ namespace GoogleContact
                         LoggerProvider.Instance.Logger.Error(lp);
                         picturePath = "";
                     }
+                    catch (System.Runtime.InteropServices.COMException ioe)
+                    {
+                        LoggerProvider.Instance.Logger.Error(ioe);
+                        picturePath = "";
+                    }
                 }
             }
             else // if in contact not image need clear it's from temp directory
