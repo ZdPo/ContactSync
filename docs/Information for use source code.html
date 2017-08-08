@@ -1,0 +1,9 @@
+<div class="wikidoc">
+<p>From version Pre final update 2012-06-15 need change authentication mechanism from user name password to use
+<a href="http://code.google.com/apis/accounts/docs/OAuth2.html">OAuth 2.0</a>. In this case need registered application in
+<a href="https://code.google.com/apis/console#access" target="_blank">Google API Console</a>.&nbsp; Source code contains invalid&nbsp; Client Secret identification. When you want use source code, you must change clientSecret definition on line 38 (in this code
+ line 5) this in GoogleProvider.cs</p>
+<p>&nbsp;<a href="http://download.codeplex.com/Download?ProjectName=pzcgsync&DownloadId=390351"><img title="image" border="0" alt="image" src="http://download.codeplex.com/Download?ProjectName=pzcgsync&DownloadId=390352" width="627" height="87" style="border-right-width:0px; padding-left:0px; padding-right:0px; display:inline; border-top-width:0px; border-bottom-width:0px; border-left-width:0px; padding-top:0px"></a>
+</p>
+<p>How get own clientSecret is detailed describe on&nbsp; “<a href="https://developers.google.com/google-apps/contacts/v3/#authorizing_requests_with_oauth_20">Authorizing requests with OAuth 2.0</a>”.You must change clientID too. It’s line 4 in this code snapshot.</p>
+</div><div class="ClearBoth"></div>

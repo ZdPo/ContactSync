@@ -1,0 +1,27 @@
+<div class="wikidoc">
+<p><strong>Project Description</strong><br>
+Office 2010 Add-In for synchronization contact Outlook contact and Google Contact.<br>
+Project based on .NET Google Data API version 3.0 and Microsoft Office 2010 API in VSTO.<br>
+This Add-In is complete written in C#.</p>
+<h2>Pre final update 2012-06-15</h2>
+<p><strong>Now work:</strong></p>
+<ul>
+<li>First synchronization setup </li><li>Synchronization setup is possible one-way or both-way </li><li>Synchronization contact image </li><li>Synchronize Google contact groups with Outlook Category (Google system category shows in Outlook as &ldquo;System Group: name&rdquo;)
+</li><li>Cache data on disk for speed up synchronization is configurable by settings per system
+</li><li>New authentication schema for Google APIs&nbsp; </li></ul>
+<p><strong>Improvements:</strong></p>
+<ul>
+<li>System upgrade to use OAuth 2.0 technology (based on this: <a href="https://developers.google.com/accounts/docs/OAuth2" target="_blank">
+https://developers.google.com/accounts/docs/OAuth2</a>) </li><li>New location for log file move from LocalApplicationData to LocalTempPath </li><li>Logging files deleted after regular time no more then 5 log files </li></ul>
+<p><strong>In development:</strong></p>
+<ul>
+<li>Test new approach and for synchronizing use separate threads </li></ul>
+<p><strong>Planed features</strong></p>
+<ul>
+<li>Using batch request to Google </li><li>Synchronization based on time schedule </li><li>Review data before insert, update or delete </li></ul>
+<p><strong>Know issue:</strong></p>
+<ul>
+<li>Anniversary doesn't synchronize; Google data schema doesn't support it </li><li>First synchronization can&rsquo;t both-way </li><li>Reading from Google is to slow with switch off cache for Google </li><li>Not correct catch all exception </li></ul>
+<p><br>
+<a href="/wikipage?title=Previous%20release">Previous release</a></p>
+</div><div class="ClearBoth"></div>
